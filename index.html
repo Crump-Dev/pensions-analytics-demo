@@ -1,0 +1,2226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pension Intelligence Dashboard</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+/* ═══════════════════════════════════════════
+   RESET & BASE
+   ═══════════════════════════════════════════ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg-primary: #0B1120;
+  --bg-secondary: #111827;
+  --bg-card: #1E293B;
+  --bg-card-hover: #253348;
+  --border: #334155;
+  --border-light: #475569;
+  --text-primary: #F1F5F9;
+  --text-secondary: #94A3B8;
+  --text-muted: #64748B;
+  --accent-blue: #38BDF8;
+  --accent-teal: #14B8A6;
+  --accent-amber: #FBBF24;
+  --accent-purple: #A78BFA;
+  --accent-orange: #FB923C;
+  --accent-pink: #F472B6;
+  --accent-green: #4ADE80;
+  --accent-red: #EF4444;
+  --gradient-blue: linear-gradient(135deg, #38BDF8, #818CF8);
+  --gradient-teal: linear-gradient(135deg, #14B8A6, #38BDF8);
+  --gradient-amber: linear-gradient(135deg, #FBBF24, #FB923C);
+  --gradient-purple: linear-gradient(135deg, #A78BFA, #F472B6);
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.3);
+  --shadow-md: 0 4px 12px rgba(0,0,0,0.4);
+  --shadow-lg: 0 8px 32px rgba(0,0,0,0.5);
+  --shadow-glow-blue: 0 0 20px rgba(56,189,248,0.15);
+  --shadow-glow-teal: 0 0 20px rgba(20,184,166,0.15);
+  --shadow-glow-amber: 0 0 20px rgba(251,191,36,0.15);
+  --shadow-glow-purple: 0 0 20px rgba(167,139,250,0.15);
+  --radius: 12px;
+  --radius-sm: 8px;
+  --radius-lg: 16px;
+  --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+body {
+  font-family: 'Inter', -apple-system, sans-serif;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  line-height: 1.6;
+  overflow-x: hidden;
+  min-height: 100vh;
+}
+
+/* ═══════════════════════════════════════════
+   NAVIGATION
+   ═══════════════════════════════════════════ */
+.nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  background: rgba(11, 17, 32, 0.85);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border);
+  padding: 0 2rem;
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.nav-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.nav-logo {
+  width: 36px;
+  height: 36px;
+  background: var(--gradient-teal);
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 18px;
+  color: var(--bg-primary);
+}
+
+.nav-title {
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  color: var(--text-primary);
+}
+
+.nav-subtitle {
+  font-size: 11px;
+  color: var(--text-muted);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  font-weight: 500;
+}
+
+.nav-tabs {
+  display: flex;
+  gap: 4px;
+  background: var(--bg-secondary);
+  padding: 4px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+}
+
+.nav-tab {
+  padding: 8px 20px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: var(--transition);
+  border: none;
+  background: none;
+  white-space: nowrap;
+}
+
+.nav-tab:hover {
+  color: var(--text-primary);
+  background: rgba(255,255,255,0.05);
+}
+
+.nav-tab.active {
+  background: var(--bg-card);
+  color: var(--accent-blue);
+  box-shadow: var(--shadow-sm);
+}
+
+.nav-meta {
+  font-size: 12px;
+  color: var(--text-muted);
+  text-align: right;
+}
+
+.nav-meta strong {
+  color: var(--accent-teal);
+  font-weight: 600;
+}
+
+/* ═══════════════════════════════════════════
+   MAIN CONTENT
+   ═══════════════════════════════════════════ */
+.main {
+  padding-top: 80px;
+  min-height: 100vh;
+}
+
+.page {
+  display: none;
+  padding: 0 2rem 3rem;
+  max-width: 1440px;
+  margin: 0 auto;
+}
+
+.page.active {
+  display: block;
+  animation: fadeIn 0.4s ease;
+}
+
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ═══════════════════════════════════════════
+   PAGE HEADERS
+   ═══════════════════════════════════════════ */
+.page-header {
+  margin-bottom: 2rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.page-header h1 {
+  font-size: 28px;
+  font-weight: 800;
+  margin-bottom: 6px;
+  background: var(--gradient-blue);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.page-header p {
+  font-size: 15px;
+  color: var(--text-secondary);
+  font-weight: 400;
+}
+
+.page-header.teal h1 { background: var(--gradient-teal); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+.page-header.amber h1 { background: var(--gradient-amber); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+.page-header.purple h1 { background: var(--gradient-purple); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+
+/* ═══════════════════════════════════════════
+   METRIC CARDS
+   ═══════════════════════════════════════════ */
+.metrics-grid {
+  display: grid;
+  gap: 16px;
+  margin-bottom: 2rem;
+}
+
+.metrics-grid.cols-4 { grid-template-columns: repeat(4, 1fr); }
+.metrics-grid.cols-3 { grid-template-columns: repeat(3, 1fr); }
+.metrics-grid.cols-5 { grid-template-columns: repeat(5, 1fr); }
+.metrics-grid.cols-2 { grid-template-columns: repeat(2, 1fr); }
+
+.metric-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 24px;
+  transition: var(--transition);
+  position: relative;
+  overflow: hidden;
+}
+
+.metric-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  border-radius: var(--radius) var(--radius) 0 0;
+}
+
+.metric-card.blue::before { background: var(--gradient-blue); }
+.metric-card.teal::before { background: var(--gradient-teal); }
+.metric-card.amber::before { background: var(--gradient-amber); }
+.metric-card.purple::before { background: var(--gradient-purple); }
+.metric-card.green::before { background: linear-gradient(135deg, #4ADE80, #14B8A6); }
+.metric-card.pink::before { background: linear-gradient(135deg, #F472B6, #A78BFA); }
+
+.metric-card:hover {
+  border-color: var(--border-light);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+.metric-card.blue:hover { box-shadow: var(--shadow-glow-blue); }
+.metric-card.teal:hover { box-shadow: var(--shadow-glow-teal); }
+.metric-card.amber:hover { box-shadow: var(--shadow-glow-amber); }
+.metric-card.purple:hover { box-shadow: var(--shadow-glow-purple); }
+
+.metric-label {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  color: var(--text-muted);
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.metric-value {
+  font-size: 36px;
+  font-weight: 800;
+  line-height: 1.1;
+  margin-bottom: 6px;
+}
+
+.metric-card.blue .metric-value { color: var(--accent-blue); }
+.metric-card.teal .metric-value { color: var(--accent-teal); }
+.metric-card.amber .metric-value { color: var(--accent-amber); }
+.metric-card.purple .metric-value { color: var(--accent-purple); }
+.metric-card.green .metric-value { color: var(--accent-green); }
+.metric-card.pink .metric-value { color: var(--accent-pink); }
+
+.metric-detail {
+  font-size: 13px;
+  color: var(--text-secondary);
+  font-weight: 400;
+}
+
+.metric-badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 600;
+  margin-top: 6px;
+}
+
+.metric-badge.up { background: rgba(74,222,128,0.15); color: var(--accent-green); }
+.metric-badge.down { background: rgba(239,68,68,0.15); color: var(--accent-red); }
+.metric-badge.neutral { background: rgba(148,163,184,0.15); color: var(--text-secondary); }
+
+/* ═══════════════════════════════════════════
+   CHART CARDS
+   ═══════════════════════════════════════════ */
+.chart-row {
+  display: grid;
+  gap: 16px;
+  margin-bottom: 2rem;
+}
+
+.chart-row.cols-2 { grid-template-columns: 1fr 1fr; }
+.chart-row.cols-3 { grid-template-columns: 1fr 1fr 1fr; }
+.chart-row.cols-1-2 { grid-template-columns: 1fr 2fr; }
+.chart-row.cols-2-1 { grid-template-columns: 2fr 1fr; }
+
+.chart-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 24px;
+  transition: var(--transition);
+}
+
+.chart-card:hover {
+  border-color: var(--border-light);
+}
+
+.chart-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 4px;
+}
+
+.chart-subtitle {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-bottom: 16px;
+}
+
+.chart-container {
+  position: relative;
+  width: 100%;
+}
+
+.chart-container.h-300 { height: 300px; }
+.chart-container.h-250 { height: 250px; }
+.chart-container.h-200 { height: 200px; }
+.chart-container.h-350 { height: 350px; }
+
+/* ═══════════════════════════════════════════
+   TABLES
+   ═══════════════════════════════════════════ */
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.data-table th {
+  text-align: left;
+  padding: 10px 14px;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--text-muted);
+  font-weight: 600;
+  border-bottom: 2px solid var(--border);
+  white-space: nowrap;
+}
+
+.data-table th.right, .data-table td.right { text-align: right; }
+
+.data-table td {
+  padding: 10px 14px;
+  border-bottom: 1px solid rgba(51,65,85,0.5);
+  color: var(--text-secondary);
+}
+
+.data-table tr:hover td {
+  background: rgba(255,255,255,0.02);
+  color: var(--text-primary);
+}
+
+.data-table .highlight { color: var(--accent-blue); font-weight: 600; }
+.data-table .teal { color: var(--accent-teal); font-weight: 600; }
+.data-table .amber { color: var(--accent-amber); font-weight: 600; }
+.data-table .purple { color: var(--accent-purple); font-weight: 600; }
+
+/* Volume bars in tables */
+.vol-bar-cell {
+  position: relative;
+  min-width: 120px;
+}
+
+.vol-bar {
+  height: 6px;
+  border-radius: 3px;
+  transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.vol-bar.blue { background: var(--gradient-blue); }
+.vol-bar.teal { background: var(--gradient-teal); }
+.vol-bar.amber { background: var(--gradient-amber); }
+
+/* ═══════════════════════════════════════════
+   HEATMAP
+   ═══════════════════════════════════════════ */
+.heatmap-grid {
+  display: grid;
+  gap: 3px;
+  margin-top: 12px;
+}
+
+.heatmap-cell {
+  border-radius: 4px;
+  padding: 6px 4px;
+  text-align: center;
+  font-size: 11px;
+  font-weight: 500;
+  transition: var(--transition);
+  cursor: default;
+}
+
+.heatmap-cell:hover {
+  transform: scale(1.05);
+  z-index: 2;
+}
+
+.heatmap-label {
+  font-size: 10px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 4px;
+  text-align: center;
+  font-weight: 600;
+}
+
+/* ═══════════════════════════════════════════
+   INSIGHT CARDS
+   ═══════════════════════════════════════════ */
+.insight-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin-bottom: 2rem;
+}
+
+.insight-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px;
+  border-left: 3px solid;
+  transition: var(--transition);
+}
+
+.insight-card:hover { border-color: var(--border-light); transform: translateY(-1px); }
+
+.insight-card.blue { border-left-color: var(--accent-blue); }
+.insight-card.teal { border-left-color: var(--accent-teal); }
+.insight-card.amber { border-left-color: var(--accent-amber); }
+.insight-card.purple { border-left-color: var(--accent-purple); }
+
+.insight-title {
+  font-size: 13px;
+  font-weight: 700;
+  margin-bottom: 6px;
+  color: var(--text-primary);
+}
+
+.insight-text {
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+
+.insight-text strong { color: var(--text-primary); font-weight: 600; }
+
+/* ═══════════════════════════════════════════
+   HERO / EXECUTIVE SUMMARY
+   ═══════════════════════════════════════════ */
+.hero {
+  text-align: center;
+  padding: 3rem 0 2rem;
+  margin-bottom: 2rem;
+  position: relative;
+}
+
+.hero::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 10%;
+  right: 10%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--border-light), transparent);
+}
+
+.hero-eyebrow {
+  font-size: 12px;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  color: var(--accent-teal);
+  font-weight: 600;
+  margin-bottom: 12px;
+}
+
+.hero h1 {
+  font-size: 42px;
+  font-weight: 900;
+  line-height: 1.15;
+  margin-bottom: 12px;
+  background: linear-gradient(135deg, #F1F5F9, #94A3B8);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.hero p {
+  font-size: 16px;
+  color: var(--text-secondary);
+  max-width: 600px;
+  margin: 0 auto;
+  font-weight: 400;
+}
+
+/* ═══════════════════════════════════════════
+   SECTION DIVIDERS
+   ═══════════════════════════════════════════ */
+.section-label {
+  font-size: 11px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  font-weight: 600;
+  margin-bottom: 1rem;
+  padding-top: 0.5rem;
+}
+
+/* ═══════════════════════════════════════════
+   CALLOUT BAR
+   ═══════════════════════════════════════════ */
+.callout {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  background: rgba(56,189,248,0.06);
+  border: 1px solid rgba(56,189,248,0.15);
+  border-radius: var(--radius);
+  padding: 16px 24px;
+  margin-bottom: 2rem;
+}
+
+.callout-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  flex-shrink: 0;
+}
+
+.callout-text {
+  font-size: 14px;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+.callout-text strong { color: var(--text-primary); }
+
+.callout.teal {
+  background: rgba(20,184,166,0.06);
+  border-color: rgba(20,184,166,0.15);
+}
+
+.callout.amber {
+  background: rgba(251,191,36,0.06);
+  border-color: rgba(251,191,36,0.15);
+}
+
+/* ═══════════════════════════════════════════
+   DONUT STAT
+   ═══════════════════════════════════════════ */
+.donut-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+/* ═══════════════════════════════════════════
+   SUB-TABS (within a page)
+   ═══════════════════════════════════════════ */
+.sub-tabs {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 2rem;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 0;
+}
+
+.sub-tab {
+  padding: 10px 24px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-muted);
+  cursor: pointer;
+  border: none;
+  background: none;
+  border-bottom: 2px solid transparent;
+  transition: var(--transition);
+  margin-bottom: -1px;
+}
+
+.sub-tab:hover { color: var(--text-secondary); }
+
+.sub-tab.active {
+  color: var(--accent-green);
+  border-bottom-color: var(--accent-green);
+  font-weight: 600;
+}
+
+.sub-page { display: none; }
+.sub-page.active { display: block; animation: fadeIn 0.3s ease; }
+
+/* ═══════════════════════════════════════════
+   ANIMATED NUMBER COUNTER
+   ═══════════════════════════════════════════ */
+.counter { display: inline-block; }
+
+/* ═══════════════════════════════════════════
+   FOOTER
+   ═══════════════════════════════════════════ */
+.dashboard-footer {
+  text-align: center;
+  padding: 2rem;
+  border-top: 1px solid var(--border);
+  margin-top: 2rem;
+}
+
+.dashboard-footer p {
+  font-size: 12px;
+  color: var(--text-muted);
+  letter-spacing: 1px;
+}
+
+.dashboard-footer .brand {
+  color: var(--accent-teal);
+  font-weight: 700;
+}
+
+/* Scroll styling */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--bg-primary); }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--border-light); }
+
+@media (max-width: 1024px) {
+  .metrics-grid.cols-4, .metrics-grid.cols-5 { grid-template-columns: repeat(2, 1fr); }
+  .chart-row.cols-2, .chart-row.cols-1-2, .chart-row.cols-2-1 { grid-template-columns: 1fr; }
+  .insight-row { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════
+     NAVIGATION
+     ═══════════════════════════════════════════ -->
+<nav class="nav">
+  <div class="nav-brand">
+    <div class="nav-logo">P</div>
+    <div>
+      <div class="nav-title">Pension Intelligence</div>
+      <div class="nav-subtitle">Analytics Platform</div>
+    </div>
+  </div>
+  <div class="nav-tabs">
+    <button class="nav-tab active" data-page="overview">Executive Summary</button>
+    <button class="nav-tab" data-page="pipeline">Retirement Pipeline</button>
+    <button class="nav-tab" data-page="operations">Operational Intelligence</button>
+    <button class="nav-tab" data-page="behaviour">Member Behaviour</button>
+    <button class="nav-tab" data-page="processing">Processing Volumes</button>
+    <button class="nav-tab" data-page="audit">Calculation Audit</button>
+  </div>
+  <div class="nav-meta">
+    <div>Data as at <strong>Feb 2026</strong></div>
+    <div style="font-size:11px">Confidential</div>
+  </div>
+</nav>
+
+<!-- ═══════════════════════════════════════════
+     PAGE 1: EXECUTIVE SUMMARY
+     ═══════════════════════════════════════════ -->
+<div class="main">
+<div class="page active" id="page-overview">
+
+  <div class="hero">
+    <div class="hero-eyebrow">Pension Scheme Analytics</div>
+    <h1>Your Data. Decoded.</h1>
+    <p>Actionable intelligence across retirement forecasting, casework operations, member behaviour, and processing volumes.</p>
+  </div>
+
+  <div class="metrics-grid cols-5">
+    <div class="metric-card blue">
+      <div class="metric-label">Total Members</div>
+      <div class="metric-value"><span class="counter" data-target="28459">0</span></div>
+      <div class="metric-detail">Active, deferred & pensioner</div>
+    </div>
+    <div class="metric-card teal">
+      <div class="metric-label">Retirees Analysed</div>
+      <div class="metric-value"><span class="counter" data-target="4039">0</span></div>
+      <div class="metric-detail">Unique members with retirement</div>
+    </div>
+    <div class="metric-card amber">
+      <div class="metric-label">Cases Tracked</div>
+      <div class="metric-value"><span class="counter" data-target="47832">0</span></div>
+      <div class="metric-detail">Across 60 case types, 3 years</div>
+    </div>
+    <div class="metric-card purple">
+      <div class="metric-label">Forecast Horizon</div>
+      <div class="metric-value">10yr</div>
+      <div class="metric-detail">Mortality-adjusted projections</div>
+    </div>
+    <div class="metric-card green">
+      <div class="metric-label">Quote Hit Rate</div>
+      <div class="metric-value"><span class="counter" data-target="91.8" data-decimal="1">0</span>%</div>
+      <div class="metric-detail">Members quoted before retirement</div>
+    </div>
+  </div>
+
+  <div class="section-label">Capability Overview</div>
+
+  <div class="chart-row cols-2">
+    <div class="chart-card">
+      <div class="chart-title">Retirement Volume Forecast</div>
+      <div class="chart-subtitle">Expected retirements per quarter with 90% confidence interval</div>
+      <div class="chart-container h-300">
+        <canvas id="overview-forecast-chart"></canvas>
+      </div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-title">Casework Volume Trend</div>
+      <div class="chart-subtitle">Monthly completed cases — Feb 2023 to Feb 2026</div>
+      <div class="chart-container h-300">
+        <canvas id="overview-casework-chart"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <div class="insight-row">
+    <div class="insight-card blue">
+      <div class="insight-title">Predictive Forecasting</div>
+      <div class="insight-text">Scheme-specific retirement age distributions applied to <strong>every active and deferred member</strong>. Conditional probability models with ONS mortality adjustment.</div>
+    </div>
+    <div class="insight-card teal">
+      <div class="insight-title">Operational Clarity</div>
+      <div class="insight-text">60 case types, year-on-year trends, quarterly heatmaps, and open backlog tracking. <strong>Know where your resource pressure is, before it arrives.</strong></div>
+    </div>
+    <div class="insight-card amber">
+      <div class="insight-title">Member Intelligence</div>
+      <div class="insight-text">Quote-to-retirement timing by age band and scheme. Understand <strong>how your members actually behave</strong> — not how policy assumes they do.</div>
+    </div>
+  </div>
+
+  <div class="callout teal">
+    <div class="callout-icon" style="background:rgba(20,184,166,0.15); color:var(--accent-teal);">&#9679;</div>
+    <div class="callout-text">Every analysis runs against <strong>your existing admin data</strong> — no new data collection required. We transform what you already have into management information that drives decisions.</div>
+  </div>
+
+
+</div>
+
+<!-- ═══════════════════════════════════════════
+     PAGE 2: RETIREMENT PIPELINE
+     ═══════════════════════════════════════════ -->
+<div class="page" id="page-pipeline">
+
+  <div class="page-header teal">
+    <h1>Retirement Pipeline</h1>
+    <p>Forecasted retirement and quote volumes with mortality adjustment — per scheme, per quarter, with confidence intervals</p>
+  </div>
+
+  <div class="metrics-grid cols-4">
+    <div class="metric-card teal">
+      <div class="metric-label">Forecastable Members</div>
+      <div class="metric-value"><span class="counter" data-target="18742">0</span></div>
+      <div class="metric-detail">Active + Deferred population</div>
+    </div>
+    <div class="metric-card blue">
+      <div class="metric-label">Pensioners (Pattern Base)</div>
+      <div class="metric-value"><span class="counter" data-target="9412">0</span></div>
+      <div class="metric-detail">Used to derive retirement ages</div>
+    </div>
+    <div class="metric-card amber">
+      <div class="metric-label">Median Retirement Age</div>
+      <div class="metric-value">63.4</div>
+      <div class="metric-detail">Across all schemes</div>
+    </div>
+    <div class="metric-card purple">
+      <div class="metric-label">Mortality Reduction</div>
+      <div class="metric-value">2.7%</div>
+      <div class="metric-detail">10-year horizon adjustment</div>
+    </div>
+  </div>
+
+  <div class="chart-row cols-2">
+    <div class="chart-card">
+      <div class="chart-title">Quarterly Retirement Forecast</div>
+      <div class="chart-subtitle">Expected retirements with 90% confidence band</div>
+      <div class="chart-container h-300">
+        <canvas id="pipeline-retirement-chart"></canvas>
+      </div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-title">Expected Quote Demand</div>
+      <div class="chart-subtitle">Projected quote volumes — derived from retirement forecast + timing multiplier</div>
+      <div class="chart-container h-300">
+        <canvas id="pipeline-quote-chart"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <div class="chart-row cols-2-1">
+    <div class="chart-card">
+      <div class="chart-title">Forecast by Scheme</div>
+      <div class="chart-subtitle">Annual expected retirements — top 6 schemes</div>
+      <div class="chart-container h-300">
+        <canvas id="pipeline-scheme-chart"></canvas>
+      </div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-title">Retirement Age Distribution</div>
+      <div class="chart-subtitle">Observed pensioner retirement ages</div>
+      <div class="chart-container h-300">
+        <canvas id="pipeline-age-dist-chart"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <div class="callout">
+    <div class="callout-icon" style="background:rgba(56,189,248,0.15); color:var(--accent-blue);">&#9650;</div>
+    <div class="callout-text"><strong>Mortality Impact:</strong> ONS national life tables reduce 10-year projections by ~2.7%. This matters most at longer horizons — year 1 impact is just 0.3%, but years 8-10 see reductions of 4-5% as older cohorts are adjusted for survival probability.</div>
+  </div>
+
+  <div class="section-label">Scheme Retirement Age Patterns</div>
+  <div class="chart-card">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Scheme</th>
+          <th class="right">Pensioners</th>
+          <th class="right">Median Age</th>
+          <th class="right">Mean Age</th>
+          <th class="right">Earliest</th>
+          <th class="right">Latest</th>
+          <th>Range</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td class="highlight">Scheme A</td><td class="right">3,841</td><td class="right teal">63.2</td><td class="right">63.5</td><td class="right">50</td><td class="right">75</td><td><div class="vol-bar blue" style="width:100%"></div></td></tr>
+        <tr><td class="highlight">Scheme B</td><td class="right">2,156</td><td class="right teal">64.1</td><td class="right">63.8</td><td class="right">52</td><td class="right">72</td><td><div class="vol-bar blue" style="width:80%"></div></td></tr>
+        <tr><td class="highlight">Scheme C</td><td class="right">1,247</td><td class="right teal">62.8</td><td class="right">62.4</td><td class="right">55</td><td class="right">70</td><td><div class="vol-bar blue" style="width:60%"></div></td></tr>
+        <tr><td class="highlight">Scheme D</td><td class="right">891</td><td class="right teal">63.9</td><td class="right">63.7</td><td class="right">53</td><td class="right">71</td><td><div class="vol-bar blue" style="width:48%"></div></td></tr>
+        <tr><td class="highlight">Scheme E</td><td class="right">724</td><td class="right teal">64.5</td><td class="right">64.2</td><td class="right">55</td><td class="right">75</td><td><div class="vol-bar blue" style="width:40%"></div></td></tr>
+        <tr><td class="highlight">Scheme F</td><td class="right">553</td><td class="right teal">62.1</td><td class="right">62.5</td><td class="right">50</td><td class="right">68</td><td><div class="vol-bar blue" style="width:32%"></div></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+</div>
+
+<!-- ═══════════════════════════════════════════
+     PAGE 3: OPERATIONAL INTELLIGENCE
+     ═══════════════════════════════════════════ -->
+<div class="page" id="page-operations">
+
+  <div class="page-header amber">
+    <h1>Operational Intelligence</h1>
+    <p>Casework volumes, trends, and resource pressure across all case types and schemes</p>
+  </div>
+
+  <div class="metrics-grid cols-5">
+    <div class="metric-card amber">
+      <div class="metric-label">Total Cases</div>
+      <div class="metric-value"><span class="counter" data-target="47832">0</span></div>
+      <div class="metric-detail">Feb 2023 — Feb 2026</div>
+    </div>
+    <div class="metric-card blue">
+      <div class="metric-label">Unique Members</div>
+      <div class="metric-value"><span class="counter" data-target="12847">0</span></div>
+      <div class="metric-detail">Across all case types</div>
+    </div>
+    <div class="metric-card teal">
+      <div class="metric-label">Completed</div>
+      <div class="metric-value"><span class="counter" data-target="44291">0</span></div>
+      <div class="metric-detail">92.6% completion rate</div>
+    </div>
+    <div class="metric-card purple">
+      <div class="metric-label">Open Backlog</div>
+      <div class="metric-value"><span class="counter" data-target="3541">0</span></div>
+      <div class="metric-detail">Active open cases</div>
+    </div>
+    <div class="metric-card green">
+      <div class="metric-label">Cases / Member</div>
+      <div class="metric-value">3.7</div>
+      <div class="metric-detail">Average across population</div>
+    </div>
+  </div>
+
+  <div class="chart-row cols-2">
+    <div class="chart-card">
+      <div class="chart-title">Monthly Case Volume</div>
+      <div class="chart-subtitle">Completed cases per month with 6-month rolling average</div>
+      <div class="chart-container h-300">
+        <canvas id="ops-monthly-chart"></canvas>
+      </div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-title">Year-on-Year Comparison</div>
+      <div class="chart-subtitle">Annual volume by top case types — 2023 vs 2024 vs 2025</div>
+      <div class="chart-container h-300">
+        <canvas id="ops-yoy-chart"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-label">Quarterly Heatmap — Top 10 Case Types</div>
+  <div class="chart-card" style="overflow-x:auto;">
+    <div id="heatmap-container"></div>
+  </div>
+
+  <div style="height:16px"></div>
+
+  <div class="chart-row cols-2">
+    <div class="chart-card">
+      <div class="chart-title">Top 10 Case Types by Volume</div>
+      <div class="chart-subtitle">These case types account for ~78% of all volume</div>
+      <div class="chart-container h-300">
+        <canvas id="ops-topcase-chart"></canvas>
+      </div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-title">Scheme Workload Distribution</div>
+      <div class="chart-subtitle">Cases and unique members per scheme</div>
+      <div class="chart-container h-300">
+        <canvas id="ops-scheme-chart"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-label">Open Backlog — Top 10</div>
+  <div class="chart-card">
+    <table class="data-table">
+      <thead>
+        <tr><th>Case Type</th><th>Description</th><th class="right">Open Cases</th><th style="width:200px">Backlog</th></tr>
+      </thead>
+      <tbody>
+        <tr><td class="amber">RET</td><td>Retirement</td><td class="right">487</td><td><div class="vol-bar amber" style="width:100%"></div></td></tr>
+        <tr><td class="amber">RETQ</td><td>Retirement Quote</td><td class="right">423</td><td><div class="vol-bar amber" style="width:87%"></div></td></tr>
+        <tr><td class="amber">DRQ</td><td>Deferred Retirement Quote</td><td class="right">381</td><td><div class="vol-bar amber" style="width:78%"></div></td></tr>
+        <tr><td class="amber">BEN</td><td>Benefit Calculation</td><td class="right">312</td><td><div class="vol-bar amber" style="width:64%"></div></td></tr>
+        <tr><td class="amber">TVQ</td><td>Transfer Value Quote</td><td class="right">298</td><td><div class="vol-bar amber" style="width:61%"></div></td></tr>
+        <tr><td class="amber">DWP</td><td>DWP Enquiry</td><td class="right">241</td><td><div class="vol-bar amber" style="width:49%"></div></td></tr>
+        <tr><td class="amber">ADD</td><td>Address Change</td><td class="right">218</td><td><div class="vol-bar amber" style="width:45%"></div></td></tr>
+        <tr><td class="amber">DTH</td><td>Death Notification</td><td class="right">197</td><td><div class="vol-bar amber" style="width:40%"></div></td></tr>
+        <tr><td class="amber">GEN</td><td>General Enquiry</td><td class="right">164</td><td><div class="vol-bar amber" style="width:34%"></div></td></tr>
+        <tr><td class="amber">PAY</td><td>Payroll Query</td><td class="right">142</td><td><div class="vol-bar amber" style="width:29%"></div></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+</div>
+
+<!-- ═══════════════════════════════════════════
+     PAGE 4: MEMBER BEHAVIOUR
+     ═══════════════════════════════════════════ -->
+<div class="page" id="page-behaviour">
+
+  <div class="page-header purple">
+    <h1>Member Behaviour</h1>
+    <p>How members move from quote to retirement — timing patterns by age band and scheme</p>
+  </div>
+
+  <div class="metrics-grid cols-4">
+    <div class="metric-card purple">
+      <div class="metric-label">Unique Retirees</div>
+      <div class="metric-value"><span class="counter" data-target="4039">0</span></div>
+      <div class="metric-detail">Analysed retirement records</div>
+    </div>
+    <div class="metric-card teal">
+      <div class="metric-label">Quote on File</div>
+      <div class="metric-value"><span class="counter" data-target="91.8" data-decimal="1">0</span>%</div>
+      <div class="metric-detail">3,708 of 4,039 members</div>
+    </div>
+    <div class="metric-card blue">
+      <div class="metric-label">Median Timing</div>
+      <div class="metric-value">90d</div>
+      <div class="metric-detail">Quote to actual retirement</div>
+    </div>
+    <div class="metric-card amber">
+      <div class="metric-label">No Quote</div>
+      <div class="metric-value"><span class="counter" data-target="331">0</span></div>
+      <div class="metric-detail">8.2% retired without any quote</div>
+    </div>
+  </div>
+
+  <div class="chart-row cols-2">
+    <div class="chart-card">
+      <div class="chart-title">Quote-to-Retirement Timing Distribution</div>
+      <div class="chart-subtitle">How quickly members retire after receiving their quote</div>
+      <div class="chart-container h-300">
+        <canvas id="beh-timing-chart"></canvas>
+      </div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-title">Timing by Age Band</div>
+      <div class="chart-subtitle">Median days from quote to retirement</div>
+      <div class="chart-container h-300">
+        <canvas id="beh-ageband-chart"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-label">Age Band Analysis</div>
+  <div class="chart-card">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Age Band</th>
+          <th class="right">Members</th>
+          <th class="right">Avg (days)</th>
+          <th class="right">Median</th>
+          <th class="right">P25</th>
+          <th class="right">P75</th>
+          <th class="right">P90</th>
+          <th>Distribution</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td class="purple">Under 55</td><td class="right">287</td><td class="right">148</td><td class="right highlight">112</td><td class="right">56</td><td class="right">203</td><td class="right">342</td><td><div class="vol-bar" style="width:45%; background:var(--gradient-purple)"></div></td></tr>
+        <tr><td class="purple">55–59</td><td class="right">624</td><td class="right">98</td><td class="right highlight">72</td><td class="right">34</td><td class="right">138</td><td class="right">241</td><td><div class="vol-bar" style="width:28%; background:var(--gradient-purple)"></div></td></tr>
+        <tr><td class="purple">60–64</td><td class="right">1,482</td><td class="right">112</td><td class="right highlight">84</td><td class="right">42</td><td class="right">156</td><td class="right">278</td><td><div class="vol-bar" style="width:33%; background:var(--gradient-purple)"></div></td></tr>
+        <tr><td class="purple">65–69</td><td class="right">834</td><td class="right">131</td><td class="right highlight">98</td><td class="right">49</td><td class="right">182</td><td class="right">312</td><td><div class="vol-bar" style="width:38%; background:var(--gradient-purple)"></div></td></tr>
+        <tr><td class="purple">70+</td><td class="right">235</td><td class="right">76</td><td class="right highlight">54</td><td class="right">21</td><td class="right">104</td><td class="right">198</td><td><div class="vol-bar" style="width:21%; background:var(--gradient-purple)"></div></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div style="height:16px"></div>
+
+  <div class="insight-row">
+    <div class="insight-card purple">
+      <div class="insight-title">55–59: Fastest Movers</div>
+      <div class="insight-text">Median <strong>72 days</strong> — members approaching early retirement are decisive. Often have a target date in mind and act quickly once they see the numbers.</div>
+    </div>
+    <div class="insight-card blue">
+      <div class="insight-title">65–69: The Deliberators</div>
+      <div class="insight-text">Median <strong>98 days</strong> — past normal retirement age but taking their time. Often weighing up options, waiting for a tax year boundary, or coordinating with a spouse.</div>
+    </div>
+    <div class="insight-card amber">
+      <div class="insight-title">70+: No Hesitation</div>
+      <div class="insight-text">Median just <strong>54 days</strong> — the fastest cohort. At this age, the decision is made. The quote is a formality, not a decision tool.</div>
+    </div>
+  </div>
+
+  <div class="chart-row cols-2">
+    <div class="chart-card">
+      <div class="chart-title">Quote Volume Multiplier</div>
+      <div class="chart-subtitle">Quotes generated per actual retirement — repeat + exploratory quotes</div>
+      <div class="chart-container h-250">
+        <canvas id="beh-multiplier-chart"></canvas>
+      </div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-title">Timing by Scheme</div>
+      <div class="chart-subtitle">Median quote-to-retirement days — top schemes</div>
+      <div class="chart-container h-250">
+        <canvas id="beh-scheme-chart"></canvas>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ═══════════════════════════════════════════
+     PAGE 5: PROCESSING VOLUMES
+     ═══════════════════════════════════════════ -->
+<div class="page" id="page-processing">
+
+  <div class="page-header">
+    <h1>Processing Volumes</h1>
+    <p>Switch completion rates, day-of-week patterns, and monthly projections</p>
+  </div>
+
+  <div class="metrics-grid cols-4">
+    <div class="metric-card blue">
+      <div class="metric-label">Total Switches</div>
+      <div class="metric-value"><span class="counter" data-target="2847">0</span></div>
+      <div class="metric-detail">Observed period</div>
+    </div>
+    <div class="metric-card teal">
+      <div class="metric-label">Weekday Average</div>
+      <div class="metric-value">18.4</div>
+      <div class="metric-detail">Switches per weekday</div>
+    </div>
+    <div class="metric-card amber">
+      <div class="metric-label">Weekend Average</div>
+      <div class="metric-value">3.2</div>
+      <div class="metric-detail">Switches per weekend day</div>
+    </div>
+    <div class="metric-card purple">
+      <div class="metric-label">Month Projection</div>
+      <div class="metric-value"><span class="counter" data-target="412">0</span></div>
+      <div class="metric-detail">Feb 2026 estimated total</div>
+    </div>
+  </div>
+
+  <div class="chart-row cols-2">
+    <div class="chart-card">
+      <div class="chart-title">Daily Switch Volume</div>
+      <div class="chart-subtitle">Individual day volumes with weekday/weekend differentiation</div>
+      <div class="chart-container h-300">
+        <canvas id="proc-daily-chart"></canvas>
+      </div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-title">Day-of-Week Pattern</div>
+      <div class="chart-subtitle">Average switches by day of week</div>
+      <div class="chart-container h-300">
+        <canvas id="proc-dow-chart"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <div class="chart-row cols-2">
+    <div class="chart-card">
+      <div class="chart-title">Monthly Projection — 2026</div>
+      <div class="chart-subtitle">Projected volumes with 90% confidence interval</div>
+      <div class="chart-container h-300">
+        <canvas id="proc-monthly-chart"></canvas>
+      </div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-title">Weekday vs Weekend Ratio</div>
+      <div class="chart-subtitle">Processing is heavily weekday-weighted — 5.75x higher</div>
+      <div class="chart-container h-300">
+        <canvas id="proc-ratio-chart"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <div class="callout amber">
+    <div class="callout-icon" style="background:rgba(251,191,36,0.15); color:var(--accent-amber);">&#9679;</div>
+    <div class="callout-text"><strong>Projection methodology:</strong> Weekday and weekend daily rates calculated separately from observed data. Monthly projections count business days and weekend days remaining, then apply rates with a normal distribution confidence interval. Current month accuracy improves as more days are observed.</div>
+  </div>
+
+</div>
+
+<!-- ═══════════════════════════════════════════
+     PAGE 6: CALCULATION AUDIT
+     ═══════════════════════════════════════════ -->
+<div class="page" id="page-audit">
+
+  <div class="page-header">
+    <h1 style="background: linear-gradient(135deg, #4ADE80, #38BDF8); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;">Calculation Audit</h1>
+    <p>Semantic formula comparison across multi-sheet actuarial workbooks — intelligent matching despite structural changes</p>
+  </div>
+
+  <div class="sub-tabs">
+    <button class="sub-tab active" data-subpage="audit-overview">Overview</button>
+    <button class="sub-tab" data-subpage="audit-engine">Semantic Engine</button>
+    <button class="sub-tab" data-subpage="audit-sheets">Sheet Analysis</button>
+  </div>
+
+  <!-- SUB-PAGE 1: Overview -->
+  <div class="sub-page active" id="audit-overview">
+
+  <div class="metrics-grid cols-5">
+    <div class="metric-card green">
+      <div class="metric-label">Fields Compared</div>
+      <div class="metric-value"><span class="counter" data-target="192">0</span></div>
+      <div class="metric-detail">Across 12 sheets</div>
+    </div>
+    <div class="metric-card teal">
+      <div class="metric-label">Exact Matches</div>
+      <div class="metric-value"><span class="counter" data-target="152">0</span></div>
+      <div class="metric-detail">79.2% match rate</div>
+    </div>
+    <div class="metric-card amber">
+      <div class="metric-label">Formula Differences</div>
+      <div class="metric-value"><span class="counter" data-target="23">0</span></div>
+      <div class="metric-detail">Semantically resolved</div>
+    </div>
+    <div class="metric-card purple">
+      <div class="metric-label">Value Differences</div>
+      <div class="metric-value"><span class="counter" data-target="7">0</span></div>
+      <div class="metric-detail">Flagged for review</div>
+    </div>
+    <div class="metric-card blue">
+      <div class="metric-label">Normalizations</div>
+      <div class="metric-value"><span class="counter" data-target="1159">0</span></div>
+      <div class="metric-detail">847 field + 312 formula</div>
+    </div>
+  </div>
+
+  <!-- Pipeline Visualization -->
+  <div class="section-label">Analysis Pipeline</div>
+  <div class="chart-card" style="padding: 32px;">
+    <div style="display:flex; align-items:center; justify-content:center; gap:0; flex-wrap:wrap;">
+      <div style="text-align:center; flex:1; min-width:120px;">
+        <div style="width:52px; height:52px; border-radius:14px; background:rgba(56,189,248,0.15); border:2px solid var(--accent-blue); display:flex; align-items:center; justify-content:center; margin:0 auto 10px; font-size:20px;">&#128196;</div>
+        <div style="font-size:12px; font-weight:700; color:var(--accent-blue);">Extract</div>
+        <div style="font-size:10px; color:var(--text-muted); margin-top:2px;">Parse both<br>workbooks</div>
+      </div>
+      <div style="color:var(--text-muted); font-size:20px; flex:0; padding:0 8px;">&#10132;</div>
+      <div style="text-align:center; flex:1; min-width:120px;">
+        <div style="width:52px; height:52px; border-radius:14px; background:rgba(20,184,166,0.15); border:2px solid var(--accent-teal); display:flex; align-items:center; justify-content:center; margin:0 auto 10px; font-size:20px;">&#128260;</div>
+        <div style="font-size:12px; font-weight:700; color:var(--accent-teal);">Normalize</div>
+        <div style="font-size:10px; color:var(--text-muted); margin-top:2px;">1,159 field &amp; formula<br>normalizations</div>
+      </div>
+      <div style="color:var(--text-muted); font-size:20px; flex:0; padding:0 8px;">&#10132;</div>
+      <div style="text-align:center; flex:1; min-width:120px;">
+        <div style="width:52px; height:52px; border-radius:14px; background:rgba(167,139,250,0.15); border:2px solid var(--accent-purple); display:flex; align-items:center; justify-content:center; margin:0 auto 10px; font-size:20px;">&#128279;</div>
+        <div style="font-size:12px; font-weight:700; color:var(--accent-purple);">Match</div>
+        <div style="font-size:10px; color:var(--text-muted); margin-top:2px;">Field-name based<br>intelligent matching</div>
+      </div>
+      <div style="color:var(--text-muted); font-size:20px; flex:0; padding:0 8px;">&#10132;</div>
+      <div style="text-align:center; flex:1; min-width:120px;">
+        <div style="width:52px; height:52px; border-radius:14px; background:rgba(251,191,36,0.15); border:2px solid var(--accent-amber); display:flex; align-items:center; justify-content:center; margin:0 auto 10px; font-size:20px;">&#128269;</div>
+        <div style="font-size:12px; font-weight:700; color:var(--accent-amber);">Semantic Compare</div>
+        <div style="font-size:10px; color:var(--text-muted); margin-top:2px;">Resolve cell refs<br>to field names</div>
+      </div>
+      <div style="color:var(--text-muted); font-size:20px; flex:0; padding:0 8px;">&#10132;</div>
+      <div style="text-align:center; flex:1; min-width:120px;">
+        <div style="width:52px; height:52px; border-radius:14px; background:rgba(74,222,128,0.15); border:2px solid var(--accent-green); display:flex; align-items:center; justify-content:center; margin:0 auto 10px; font-size:20px;">&#128200;</div>
+        <div style="font-size:12px; font-weight:700; color:var(--accent-green);">Report</div>
+        <div style="font-size:10px; color:var(--text-muted); margin-top:2px;">Actionable<br>audit output</div>
+      </div>
+    </div>
+  </div>
+
+  <div style="height:16px"></div>
+
+  <div class="chart-row cols-2">
+    <div class="chart-card">
+      <div class="chart-title">Status Breakdown</div>
+      <div class="chart-subtitle">Distribution of comparison results across all fields</div>
+      <div class="chart-container h-300">
+        <canvas id="audit-status-chart"></canvas>
+      </div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-title">Match Rate by Sheet</div>
+      <div class="chart-subtitle">Percentage of exact matches per worksheet</div>
+      <div class="chart-container h-300">
+        <canvas id="audit-sheet-chart"></canvas>
+      </div>
+    </div>
+  </div>
+
+  </div><!-- /audit-overview -->
+
+  <!-- SUB-PAGE 2: Semantic Engine -->
+  <div class="sub-page" id="audit-engine">
+
+  <div class="section-label">Semantic Formula Resolution</div>
+  <div class="callout" style="border-color: rgba(74,222,128,0.2); background: rgba(74,222,128,0.04);">
+    <div class="callout-icon" style="background:rgba(74,222,128,0.15); color:var(--accent-green);">&#9679;</div>
+    <div class="callout-text"><strong>The problem:</strong> When actuaries modify workbooks, rows get inserted, deleted, or reordered. Cell references like <code style="color:var(--accent-amber)">F46</code> shift to <code style="color:var(--accent-amber)">F45</code> — making naive comparison useless. Our semantic engine resolves references to <strong>field names</strong>, revealing that the formulas are actually identical.</div>
+  </div>
+
+  <div class="chart-card" style="overflow:hidden;">
+    <div style="display:grid; grid-template-columns:1fr 40px 1fr 40px 1fr; gap:0; align-items:stretch;" id="semantic-explainer">
+      <!-- Step 1: Raw -->
+      <div style="padding:20px; background:rgba(251,191,36,0.06); border-radius:var(--radius-sm) 0 0 var(--radius-sm);">
+        <div style="display:flex; align-items:center; gap:8px; margin-bottom:12px;">
+          <div style="width:24px; height:24px; border-radius:50%; background:var(--accent-amber); color:var(--bg-primary); display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:800;">1</div>
+          <span style="font-size:12px; font-weight:700; color:var(--accent-amber); text-transform:uppercase; letter-spacing:1px;">Raw Formulas</span>
+        </div>
+        <div style="font-size:11px; color:var(--text-muted); margin-bottom:8px;">Workbook 1 (Master)</div>
+        <div style="font-family:monospace; font-size:13px; color:var(--accent-amber); background:rgba(0,0,0,0.3); padding:8px 12px; border-radius:6px; margin-bottom:10px;">=ROUND(Input!F<strong>46</strong>,2)</div>
+        <div style="font-size:11px; color:var(--text-muted); margin-bottom:8px;">Workbook 2 (Modified)</div>
+        <div style="font-family:monospace; font-size:13px; color:var(--accent-amber); background:rgba(0,0,0,0.3); padding:8px 12px; border-radius:6px;">=ROUND(Input!F<strong>45</strong>,2)</div>
+        <div style="margin-top:10px; font-size:11px; padding:6px 10px; background:rgba(239,68,68,0.15); color:var(--accent-red); border-radius:4px; text-align:center; font-weight:600;">&#10007; Naive diff: MISMATCH</div>
+      </div>
+      <!-- Arrow -->
+      <div style="display:flex; align-items:center; justify-content:center; color:var(--text-muted); font-size:24px;">&#10132;</div>
+      <!-- Step 2: Resolution -->
+      <div style="padding:20px; background:rgba(167,139,250,0.06);">
+        <div style="display:flex; align-items:center; gap:8px; margin-bottom:12px;">
+          <div style="width:24px; height:24px; border-radius:50%; background:var(--accent-purple); color:var(--bg-primary); display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:800;">2</div>
+          <span style="font-size:12px; font-weight:700; color:var(--accent-purple); text-transform:uppercase; letter-spacing:1px;">Semantic Resolution</span>
+        </div>
+        <div style="font-size:11px; color:var(--text-muted); margin-bottom:8px;">Row 46 in WB1 = "Pension at NRD"</div>
+        <div style="font-family:monospace; font-size:13px; color:var(--accent-purple); background:rgba(0,0,0,0.3); padding:8px 12px; border-radius:6px; margin-bottom:10px;">=ROUND(Input!{<strong>Pension_at_NRD</strong>},2)</div>
+        <div style="font-size:11px; color:var(--text-muted); margin-bottom:8px;">Row 45 in WB2 = "Pension at NRD"</div>
+        <div style="font-family:monospace; font-size:13px; color:var(--accent-purple); background:rgba(0,0,0,0.3); padding:8px 12px; border-radius:6px;">=ROUND(Input!{<strong>Pension_at_NRD</strong>},2)</div>
+        <div style="margin-top:10px; font-size:11px; padding:6px 10px; background:rgba(167,139,250,0.15); color:var(--accent-purple); border-radius:4px; text-align:center; font-weight:600;">&#128270; Same field, different row</div>
+      </div>
+      <!-- Arrow -->
+      <div style="display:flex; align-items:center; justify-content:center; color:var(--text-muted); font-size:24px;">&#10132;</div>
+      <!-- Step 3: Verdict -->
+      <div style="padding:20px; background:rgba(74,222,128,0.06); border-radius:0 var(--radius-sm) var(--radius-sm) 0;">
+        <div style="display:flex; align-items:center; gap:8px; margin-bottom:12px;">
+          <div style="width:24px; height:24px; border-radius:50%; background:var(--accent-green); color:var(--bg-primary); display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:800;">3</div>
+          <span style="font-size:12px; font-weight:700; color:var(--accent-green); text-transform:uppercase; letter-spacing:1px;">Verdict</span>
+        </div>
+        <div style="text-align:center; padding:16px 0;">
+          <div style="font-size:48px; margin-bottom:8px;">&#9989;</div>
+          <div style="font-size:16px; font-weight:700; color:var(--accent-green); margin-bottom:4px;">SEMANTIC MATCH</div>
+          <div style="font-size:12px; color:var(--text-secondary);">Formulas are functionally identical.<br>Row shift detected and resolved.</div>
+        </div>
+        <div style="margin-top:10px; font-size:11px; padding:6px 10px; background:rgba(74,222,128,0.15); color:var(--accent-green); border-radius:4px; text-align:center; font-weight:600;">&#10003; True comparison: MATCH</div>
+      </div>
+    </div>
+  </div>
+
+  <div style="height:16px"></div>
+
+  <div class="insight-row">
+    <div class="insight-card" style="border-left-color: var(--accent-green);">
+      <div class="insight-title">Row-Agnostic Matching</div>
+      <div class="insight-text">When actuaries insert or delete rows, every cell reference shifts. Our engine matches by <strong>field name</strong>, not row number — so <code>F46</code> becoming <code>F45</code> is correctly identified as the same calculation.</div>
+    </div>
+    <div class="insight-card" style="border-left-color: var(--accent-purple);">
+      <div class="insight-title">Formula Decomposition</div>
+      <div class="insight-text">Every formula is broken down to its semantic components. <strong>=ROUND(Input!F46,2)</strong> becomes <strong>=ROUND('Input'!{Pension_at_NRD},2)</strong> — making the actual logic transparent regardless of structure.</div>
+    </div>
+    <div class="insight-card amber">
+      <div class="insight-title">Genuine Differences Surface</div>
+      <div class="insight-text">Once structural noise is stripped away, the <strong>7 real value differences</strong> and <strong>23 formula changes</strong> stand out clearly — no more false positives from row shifts drowning out real issues.</div>
+    </div>
+  </div>
+
+  </div><!-- /audit-engine -->
+
+  <!-- SUB-PAGE 3: Sheet Analysis -->
+  <div class="sub-page" id="audit-sheets">
+
+  <div class="section-label">Sheet-Level Breakdown</div>
+  <div class="chart-card">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Sheet</th>
+          <th class="right">Fields</th>
+          <th class="right">Exact</th>
+          <th class="right">Formula Diff</th>
+          <th class="right">Value Diff</th>
+          <th class="right">Match Rate</th>
+          <th style="width:160px">Coverage</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td class="highlight">Input</td><td class="right">29</td><td class="right teal">26</td><td class="right amber">2</td><td class="right" style="color:var(--accent-orange)">1</td><td class="right" style="color:var(--accent-green); font-weight:700">89.7%</td><td><div class="vol-bar" style="width:89.7%; background:linear-gradient(135deg, #4ADE80, #14B8A6)"></div></td></tr>
+        <tr><td class="highlight">Normal Retirement</td><td class="right">26</td><td class="right teal">15</td><td class="right amber">8</td><td class="right" style="color:var(--accent-orange)">3</td><td class="right" style="color:var(--accent-amber); font-weight:700">57.7%</td><td><div class="vol-bar" style="width:57.7%; background:linear-gradient(135deg, #FBBF24, #FB923C)"></div></td></tr>
+        <tr><td class="highlight">Early Retirement</td><td class="right">24</td><td class="right teal">17</td><td class="right amber">5</td><td class="right" style="color:var(--accent-orange)">2</td><td class="right" style="color:var(--accent-amber); font-weight:700">70.8%</td><td><div class="vol-bar" style="width:70.8%; background:linear-gradient(135deg, #FBBF24, #FB923C)"></div></td></tr>
+        <tr><td class="highlight">Late Retirement</td><td class="right">21</td><td class="right teal">15</td><td class="right amber">4</td><td class="right" style="color:var(--accent-orange)">2</td><td class="right" style="color:var(--accent-amber); font-weight:700">71.4%</td><td><div class="vol-bar" style="width:71.4%; background:linear-gradient(135deg, #FBBF24, #FB923C)"></div></td></tr>
+        <tr><td class="highlight">PCLS + Residual</td><td class="right">15</td><td class="right teal">11</td><td class="right amber">3</td><td class="right" style="color:var(--accent-orange)">1</td><td class="right" style="color:var(--accent-amber); font-weight:700">73.3%</td><td><div class="vol-bar" style="width:73.3%; background:linear-gradient(135deg, #FBBF24, #FB923C)"></div></td></tr>
+        <tr><td class="highlight">Output</td><td class="right">14</td><td class="right teal">10</td><td class="right amber">3</td><td class="right" style="color:var(--accent-orange)">1</td><td class="right" style="color:var(--accent-amber); font-weight:700">71.4%</td><td><div class="vol-bar" style="width:71.4%; background:linear-gradient(135deg, #FBBF24, #FB923C)"></div></td></tr>
+        <tr><td class="highlight">Trivial Commutation</td><td class="right">8</td><td class="right teal">6</td><td class="right amber">1</td><td class="right" style="color:var(--accent-orange)">1</td><td class="right" style="color:var(--accent-amber); font-weight:700">75.0%</td><td><div class="vol-bar" style="width:75%; background:linear-gradient(135deg, #FBBF24, #FB923C)"></div></td></tr>
+        <tr><td class="highlight">User Input</td><td class="right">18</td><td class="right teal">18</td><td class="right">0</td><td class="right">0</td><td class="right" style="color:var(--accent-green); font-weight:700">100%</td><td><div class="vol-bar" style="width:100%; background:linear-gradient(135deg, #4ADE80, #14B8A6)"></div></td></tr>
+        <tr><td class="highlight">User Outputs</td><td class="right">14</td><td class="right teal">14</td><td class="right">0</td><td class="right">0</td><td class="right" style="color:var(--accent-green); font-weight:700">100%</td><td><div class="vol-bar" style="width:100%; background:linear-gradient(135deg, #4ADE80, #14B8A6)"></div></td></tr>
+        <tr><td class="highlight">Version Control</td><td class="right">8</td><td class="right teal">8</td><td class="right">0</td><td class="right">0</td><td class="right" style="color:var(--accent-green); font-weight:700">100%</td><td><div class="vol-bar" style="width:100%; background:linear-gradient(135deg, #4ADE80, #14B8A6)"></div></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  </div><!-- /audit-sheets -->
+
+</div>
+
+<!-- FOOTER -->
+<div class="dashboard-footer">
+  <p><span class="brand">PENSIONABLE.AI</span> &nbsp;&middot;&nbsp; Pension Intelligence Platform &nbsp;&middot;&nbsp; Confidential</p>
+</div>
+
+</div><!-- /main -->
+
+<!-- ═══════════════════════════════════════════
+     JAVASCRIPT
+     ═══════════════════════════════════════════ -->
+<script>
+// ─── NAV ────────────────────────────────────
+document.querySelectorAll('.nav-tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    tab.classList.add('active');
+    const page = document.getElementById('page-' + tab.dataset.page);
+    page.classList.add('active');
+    animateCounters(page);
+    initChartsForPage(tab.dataset.page);
+  });
+});
+
+// ─── SUB-TAB NAV ────────────────────────────
+document.querySelectorAll('.sub-tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    const parent = tab.closest('.page');
+    parent.querySelectorAll('.sub-tab').forEach(t => t.classList.remove('active'));
+    parent.querySelectorAll('.sub-page').forEach(p => p.classList.remove('active'));
+    tab.classList.add('active');
+    document.getElementById(tab.dataset.subpage).classList.add('active');
+    animateCounters(document.getElementById(tab.dataset.subpage));
+  });
+});
+
+// ─── ANIMATED COUNTERS ──────────────────────
+function animateCounters(container) {
+  container.querySelectorAll('.counter').forEach(el => {
+    const target = parseFloat(el.dataset.target);
+    const decimal = parseInt(el.dataset.decimal || '0');
+    const duration = 1200;
+    const start = performance.now();
+
+    function step(now) {
+      const progress = Math.min((now - start) / duration, 1);
+      const ease = 1 - Math.pow(1 - progress, 3);
+      const val = target * ease;
+      if (decimal > 0) {
+        el.textContent = val.toFixed(decimal);
+      } else {
+        el.textContent = Math.round(val).toLocaleString();
+      }
+      if (progress < 1) requestAnimationFrame(step);
+    }
+    requestAnimationFrame(step);
+  });
+}
+
+// Initial page counters
+animateCounters(document.getElementById('page-overview'));
+
+// ─── CHART.JS DEFAULTS ─────────────────────
+Chart.defaults.color = '#94A3B8';
+Chart.defaults.borderColor = 'rgba(51,65,85,0.5)';
+Chart.defaults.font.family = "'Inter', sans-serif";
+Chart.defaults.font.size = 11;
+Chart.defaults.plugins.legend.labels.usePointStyle = true;
+Chart.defaults.plugins.legend.labels.pointStyleWidth = 8;
+Chart.defaults.plugins.legend.labels.padding = 16;
+Chart.defaults.plugins.tooltip.backgroundColor = '#1E293B';
+Chart.defaults.plugins.tooltip.borderColor = '#475569';
+Chart.defaults.plugins.tooltip.borderWidth = 1;
+Chart.defaults.plugins.tooltip.cornerRadius = 8;
+Chart.defaults.plugins.tooltip.padding = 12;
+Chart.defaults.plugins.tooltip.titleFont = { weight: '600' };
+Chart.defaults.elements.point.radius = 0;
+Chart.defaults.elements.point.hoverRadius = 5;
+Chart.defaults.elements.line.tension = 0.35;
+Chart.defaults.scale.grid.color = 'rgba(51,65,85,0.3)';
+
+const COLORS = {
+  blue: '#38BDF8',
+  teal: '#14B8A6',
+  amber: '#FBBF24',
+  purple: '#A78BFA',
+  orange: '#FB923C',
+  pink: '#F472B6',
+  green: '#4ADE80',
+  red: '#EF4444',
+  blueAlpha: 'rgba(56,189,248,0.15)',
+  tealAlpha: 'rgba(20,184,166,0.15)',
+  amberAlpha: 'rgba(251,191,36,0.15)',
+  purpleAlpha: 'rgba(167,139,250,0.15)',
+};
+
+// ─── INLINE DATALABELS PLUGIN ───
+const LABEL_CFG = {};
+
+const labelPlugin = {
+  id: 'customLabels',
+  afterDatasetsDraw(chart) {
+    const canvasId = chart.canvas.id;
+    const cfgs = LABEL_CFG[canvasId];
+    if (!cfgs) return;
+    const ctx = chart.ctx;
+    chart.data.datasets.forEach((ds, di) => {
+      const cfg = cfgs[di];
+      if (!cfg) return;
+      const meta = chart.getDatasetMeta(di);
+      if (meta.hidden) return;
+      meta.data.forEach((el, i) => {
+        let val = ds.data[i];
+        if (val === null || val === undefined) return;
+        if (Array.isArray(val)) return;
+        const fmt = cfg.formatter || ((v) => typeof v === 'number' && v >= 1000 ? v.toLocaleString() : v);
+        const label = fmt(val);
+        ctx.save();
+        ctx.font = (cfg.fontWeight || '600') + ' ' + (cfg.fontSize || 10) + 'px Inter, sans-serif';
+        ctx.fillStyle = cfg.color || '#F1F5F9';
+        ctx.textAlign = 'center';
+        const isHoriz = chart.config.options.indexAxis === 'y';
+        if (isHoriz) {
+          ctx.textAlign = 'left';
+          ctx.textBaseline = 'middle';
+          ctx.fillText(label, el.x + 6, el.y);
+        } else {
+          ctx.textBaseline = 'bottom';
+          ctx.fillText(label, el.x, el.y - 4);
+        }
+        ctx.restore();
+      });
+    });
+  }
+};
+Chart.register(labelPlugin);
+
+// ─── DATA ───────────────────────────────────
+const QUARTERS = ['Q1 26','Q2 26','Q3 26','Q4 26','Q1 27','Q2 27','Q3 27','Q4 27','Q1 28','Q2 28','Q3 28','Q4 28','Q1 29','Q2 29','Q3 29','Q4 29'];
+const RET_FORECAST = [186, 201, 218, 195, 212, 228, 241, 209, 234, 251, 238, 217, 242, 259, 248, 223];
+const RET_CI_LOW =   [142, 158, 172, 151, 168, 181, 194, 165, 188, 202, 190, 173, 194, 208, 199, 178];
+const RET_CI_HIGH =  [230, 244, 264, 239, 256, 275, 288, 253, 280, 300, 286, 261, 290, 310, 297, 268];
+
+const QUOTE_FORECAST = [241, 261, 283, 254, 276, 296, 313, 272, 304, 326, 309, 282, 315, 337, 322, 290];
+const QUOTE_CI_LOW =   [198, 214, 233, 208, 226, 243, 257, 223, 250, 268, 254, 231, 259, 277, 265, 238];
+const QUOTE_CI_HIGH =  [284, 308, 333, 300, 326, 349, 369, 321, 358, 384, 364, 333, 371, 397, 379, 342];
+
+const MONTHS_FULL = ['Feb 23','Apr 23','Jun 23','Aug 23','Oct 23','Dec 23','Feb 24','Apr 24','Jun 24','Aug 24','Oct 24','Dec 24','Feb 25','Apr 25','Jun 25','Aug 25','Oct 25','Dec 25','Feb 26'];
+const CASEWORK_MONTHLY = [1180, 1290, 1340, 1150, 1410, 1520, 1380, 1450, 1510, 1280, 1390, 1620, 1440, 1510, 1580, 1320, 1470, 1690, 1480];
+
+const SCHEME_YEARS = {
+  labels: ['Scheme A','Scheme B','Scheme C','Scheme D','Scheme E','Scheme F'],
+  y2026: [412, 231, 134, 97, 78, 62],
+  y2027: [448, 249, 146, 108, 84, 67],
+  y2028: [471, 264, 158, 114, 91, 72],
+};
+
+// Processing data
+const DAILY_LABELS = Array.from({length:20}, (_, i) => {
+  const d = new Date(2026, 1, 1 + i);
+  return d.toLocaleDateString('en-GB', {day:'numeric', month:'short'});
+});
+const DAILY_VALUES = [22, 19, 24, 16, 21, 4, 2, 18, 20, 25, 17, 23, 3, 1, 21, 19, 26, 15, 22, 5];
+const DAILY_WEEKEND = [0,0,0,0,0,1,1,0,0,0,0,0,1,1,0,0,0,0,0,1];
+
+const DOW_LABELS = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+const DOW_VALUES = [19.2, 20.1, 18.8, 17.4, 16.9, 3.8, 2.6];
+
+const MONTHLY_PROJ = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const MONTHLY_EST = [398, 412, 427, 408, 431, 418, 395, 387, 422, 438, 415, 401];
+const MONTHLY_LOW = [352, 368, 381, 362, 385, 372, 351, 343, 376, 391, 370, 357];
+const MONTHLY_HIGH = [444, 456, 473, 454, 477, 464, 439, 431, 468, 485, 460, 445];
+
+// Case type data
+const TOP_CASES = {
+  labels: ['RET','RETQ','DRQ','BEN','TVQ','DWP','ADD','DTH','GEN','PAY'],
+  values: [6842, 5923, 5187, 4612, 3891, 3245, 2987, 2654, 2341, 1876],
+  descriptions: ['Retirement','Retirement Quote','Deferred Ret. Quote','Benefit Calc.','Transfer Value Quote','DWP Enquiry','Address Change','Death Notification','General Enquiry','Payroll Query']
+};
+
+const YOY_DATA = {
+  labels: ['RET','RETQ','DRQ','BEN','TVQ','DWP'],
+  y2023: [2012, 1782, 1534, 1389, 1178, 987],
+  y2024: [2341, 2087, 1812, 1612, 1367, 1124],
+  y2025: [2489, 2054, 1841, 1611, 1346, 1134],
+};
+
+const SCHEME_CASES = {
+  labels: ['Scheme A','Scheme B','Scheme C','Scheme D','Scheme E','Scheme F'],
+  cases:   [18942, 12341, 7234, 4521, 2987, 1807],
+  members: [5124, 3241, 1987, 1234, 812, 449],
+};
+
+// Heatmap data
+const HEATMAP = {
+  types: ['RET','RETQ','DRQ','BEN','TVQ','DWP','ADD','DTH','GEN','PAY'],
+  quarters: ['Q1 23','Q2 23','Q3 23','Q4 23','Q1 24','Q2 24','Q3 24','Q4 24','Q1 25','Q2 25','Q3 25','Q4 25','Q1 26'],
+  data: [
+    [148,162,171,158,182,191,178,196,189,204,198,212,201],
+    [134,142,151,138,161,172,164,178,168,174,162,181,172],
+    [112,124,131,118,142,148,136,156,144,152,148,164,151],
+    [98,108,114,102,124,132,121,138,128,134,126,142,131],
+    [86,92,98,88,108,112,104,118,112,116,108,124,114],
+    [72,78,84,76,82,91,87,94,88,92,86,98,91],
+    [64,72,78,68,74,81,76,84,78,82,76,88,82],
+    [58,62,68,61,72,76,71,78,74,78,72,82,76],
+    [48,54,58,52,58,64,61,68,62,66,61,72,67],
+    [38,42,48,41,48,52,49,54,51,54,49,58,52],
+  ]
+};
+
+// ─── CHART INSTANCES ────────────────────────
+const charts = {};
+
+function destroyChart(id) {
+  if (charts[id]) { charts[id].destroy(); delete charts[id]; }
+}
+
+// ─── OVERVIEW CHARTS ────────────────────────
+function initOverviewCharts() {
+  destroyChart('overview-forecast');
+  charts['overview-forecast'] = new Chart(document.getElementById('overview-forecast-chart'), {
+    type: 'line',
+    data: {
+      labels: QUARTERS,
+      datasets: [
+        {
+          label: 'CI High',
+          data: RET_CI_HIGH,
+          borderColor: 'transparent',
+          backgroundColor: COLORS.tealAlpha,
+          fill: '+1',
+          pointRadius: 0,
+        },
+        {
+          label: 'CI Low',
+          data: RET_CI_LOW,
+          borderColor: 'transparent',
+          backgroundColor: 'transparent',
+          fill: false,
+          pointRadius: 0,
+        },
+        {
+          label: 'Expected Retirements',
+          data: RET_FORECAST,
+          borderColor: COLORS.teal,
+          backgroundColor: COLORS.teal,
+          borderWidth: 2.5,
+          fill: false,
+          pointRadius: 0,
+          pointHoverRadius: 5,
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      interaction: { intersect: false, mode: 'index' },
+      plugins: {
+        legend: { display: true, position: 'top', labels: { filter: (item) => item.text === 'Expected Retirements' || item.text === 'CI High' } },
+      },
+      scales: {
+        y: { beginAtZero: false, title: { display: true, text: 'Members' } },
+        x: { ticks: { maxRotation: 45 } }
+      }
+    }
+  });
+
+  destroyChart('overview-casework');
+  charts['overview-casework'] = new Chart(document.getElementById('overview-casework-chart'), {
+    type: 'bar',
+    data: {
+      labels: MONTHS_FULL,
+      datasets: [{
+        label: 'Completed Cases',
+        data: CASEWORK_MONTHLY,
+        backgroundColor: CASEWORK_MONTHLY.map((_, i) => {
+          const t = i / (CASEWORK_MONTHLY.length - 1);
+          return `rgba(251, 191, 36, ${0.4 + t * 0.5})`;
+        }),
+        borderRadius: 4,
+        borderSkipped: false,
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: {
+        y: { beginAtZero: false, min: 800, title: { display: true, text: 'Cases' } },
+        x: { ticks: { maxRotation: 45, font: { size: 10 } } }
+      }
+    }
+  });
+}
+
+// ─── PIPELINE CHARTS ────────────────────────
+function initPipelineCharts() {
+  destroyChart('pipeline-ret');
+  charts['pipeline-ret'] = new Chart(document.getElementById('pipeline-retirement-chart'), {
+    type: 'line',
+    data: {
+      labels: QUARTERS,
+      datasets: [
+        { label: '90% CI', data: RET_CI_HIGH, borderColor: 'transparent', backgroundColor: COLORS.tealAlpha, fill: '+1', pointRadius: 0 },
+        { label: '', data: RET_CI_LOW, borderColor: 'transparent', backgroundColor: 'transparent', fill: false, pointRadius: 0 },
+        { label: 'Expected', data: RET_FORECAST, borderColor: COLORS.teal, borderWidth: 2.5, fill: false, pointRadius: 0, pointHoverRadius: 5 },
+      ]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      interaction: { intersect: false, mode: 'index' },
+      plugins: { legend: { labels: { filter: (item) => item.text !== '' } } },
+      scales: { y: { beginAtZero: false }, x: { ticks: { maxRotation: 45 } } }
+    }
+  });
+
+  destroyChart('pipeline-quote');
+  charts['pipeline-quote'] = new Chart(document.getElementById('pipeline-quote-chart'), {
+    type: 'line',
+    data: {
+      labels: QUARTERS,
+      datasets: [
+        { label: '90% CI', data: QUOTE_CI_HIGH, borderColor: 'transparent', backgroundColor: COLORS.blueAlpha, fill: '+1', pointRadius: 0 },
+        { label: '', data: QUOTE_CI_LOW, borderColor: 'transparent', backgroundColor: 'transparent', fill: false, pointRadius: 0 },
+        { label: 'Expected Quotes', data: QUOTE_FORECAST, borderColor: COLORS.blue, borderWidth: 2.5, fill: false, pointRadius: 0, pointHoverRadius: 5 },
+      ]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      interaction: { intersect: false, mode: 'index' },
+      plugins: { legend: { labels: { filter: (item) => item.text !== '' } } },
+      scales: { y: { beginAtZero: false }, x: { ticks: { maxRotation: 45 } } }
+    }
+  });
+
+  destroyChart('pipeline-scheme');
+  charts['pipeline-scheme'] = new Chart(document.getElementById('pipeline-scheme-chart'), {
+    type: 'bar',
+    data: {
+      labels: SCHEME_YEARS.labels,
+      datasets: [
+        { label: '2026', data: SCHEME_YEARS.y2026, backgroundColor: COLORS.teal, borderRadius: 4, borderSkipped: false },
+        { label: '2027', data: SCHEME_YEARS.y2027, backgroundColor: COLORS.blue, borderRadius: 4, borderSkipped: false },
+        { label: '2028', data: SCHEME_YEARS.y2028, backgroundColor: COLORS.purple, borderRadius: 4, borderSkipped: false },
+      ]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { position: 'top' } },
+      scales: { y: { beginAtZero: true, title: { display: true, text: 'Expected Retirements' } } }
+    }
+  });
+
+  destroyChart('pipeline-agedist');
+  charts['pipeline-agedist'] = new Chart(document.getElementById('pipeline-age-dist-chart'), {
+    type: 'bar',
+    data: {
+      labels: ['50-54','55-57','58-59','60-61','62-63','64-65','66-67','68-69','70+'],
+      datasets: [{
+        label: 'Pensioners',
+        data: [124, 387, 612, 1241, 2487, 2134, 1356, 782, 289],
+        backgroundColor: [
+          'rgba(167,139,250,0.4)','rgba(167,139,250,0.5)','rgba(167,139,250,0.6)',
+          'rgba(167,139,250,0.7)','rgba(167,139,250,0.9)','rgba(167,139,250,0.85)',
+          'rgba(167,139,250,0.65)','rgba(167,139,250,0.5)','rgba(167,139,250,0.35)'
+        ],
+        borderRadius: 4,
+        borderSkipped: false,
+      }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: { y: { beginAtZero: true }, x: { title: { display: true, text: 'Age at Retirement' } } }
+    }
+  });
+
+  // Register data labels (external to dataset objects)
+  LABEL_CFG['pipeline-scheme-chart'] = [{}, {}, {}]; // 3 datasets, default formatter
+  LABEL_CFG['pipeline-age-dist-chart'] = [{}]; // 1 dataset, default formatter
+}
+
+// ─── OPERATIONS CHARTS ──────────────────────
+function initOpsCharts() {
+  // Monthly volume
+  destroyChart('ops-monthly');
+  const rollingAvg = CASEWORK_MONTHLY.map((_, i) => {
+    if (i < 5) return null;
+    const slice = CASEWORK_MONTHLY.slice(i - 5, i + 1);
+    return Math.round(slice.reduce((a, b) => a + b) / 6);
+  });
+
+  charts['ops-monthly'] = new Chart(document.getElementById('ops-monthly-chart'), {
+    type: 'bar',
+    data: {
+      labels: MONTHS_FULL,
+      datasets: [
+        {
+          type: 'line',
+          label: '6-month avg',
+          data: rollingAvg,
+          borderColor: COLORS.amber,
+          borderWidth: 2,
+          borderDash: [6, 3],
+          pointRadius: 0,
+          fill: false,
+          order: 0,
+        },
+        {
+          label: 'Monthly Volume',
+          data: CASEWORK_MONTHLY,
+          backgroundColor: 'rgba(251,191,36,0.5)',
+          borderRadius: 3,
+          borderSkipped: false,
+          order: 1,
+        }
+      ]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { position: 'top' } },
+      scales: {
+        y: { beginAtZero: false, min: 800 },
+        x: { ticks: { maxRotation: 45, font: { size: 10 } } }
+      }
+    }
+  });
+
+  // YoY
+  destroyChart('ops-yoy');
+  charts['ops-yoy'] = new Chart(document.getElementById('ops-yoy-chart'), {
+    type: 'bar',
+    data: {
+      labels: YOY_DATA.labels,
+      datasets: [
+        { label: '2023', data: YOY_DATA.y2023, backgroundColor: 'rgba(148,163,184,0.5)', borderRadius: 4, borderSkipped: false },
+        { label: '2024', data: YOY_DATA.y2024, backgroundColor: COLORS.amber, borderRadius: 4, borderSkipped: false },
+        { label: '2025', data: YOY_DATA.y2025, backgroundColor: COLORS.orange, borderRadius: 4, borderSkipped: false },
+      ]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { position: 'top' } },
+      scales: { y: { beginAtZero: true } }
+    }
+  });
+
+  // Top cases horizontal bar
+  destroyChart('ops-topcase');
+  charts['ops-topcase'] = new Chart(document.getElementById('ops-topcase-chart'), {
+    type: 'bar',
+    data: {
+      labels: TOP_CASES.descriptions,
+      datasets: [{
+        label: 'Cases',
+        data: TOP_CASES.values,
+        backgroundColor: TOP_CASES.values.map((_, i) => {
+          const colors = [COLORS.amber, COLORS.orange, COLORS.teal, COLORS.blue, COLORS.purple, COLORS.pink, COLORS.green, COLORS.amber, COLORS.blue, COLORS.teal];
+          return colors[i] + '99';
+        }),
+        borderRadius: 4,
+        borderSkipped: false,
+      }]
+    },
+    options: {
+      indexAxis: 'y',
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: { x: { beginAtZero: true, title: { display: true, text: 'Total Cases' } } }
+    }
+  });
+
+  // Scheme distribution
+  destroyChart('ops-scheme');
+  charts['ops-scheme'] = new Chart(document.getElementById('ops-scheme-chart'), {
+    type: 'doughnut',
+    data: {
+      labels: SCHEME_CASES.labels,
+      datasets: [{
+        data: SCHEME_CASES.cases,
+        backgroundColor: [COLORS.amber, COLORS.blue, COLORS.teal, COLORS.purple, COLORS.orange, COLORS.pink],
+        borderWidth: 0,
+        hoverOffset: 8,
+      }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      cutout: '60%',
+      plugins: {
+        legend: { position: 'right' },
+        tooltip: {
+          callbacks: {
+            label: (ctx) => `${ctx.label}: ${ctx.parsed.toLocaleString()} cases`
+          }
+        }
+      }
+    }
+  });
+
+  // Heatmap
+  buildHeatmap();
+
+  // Register data labels
+  LABEL_CFG['ops-yoy-chart'] = [{}, {}, {}]; // 3 year datasets
+  LABEL_CFG['ops-topcase-chart'] = [{}]; // horizontal bar
+}
+
+function buildHeatmap() {
+  const container = document.getElementById('heatmap-container');
+  const cols = HEATMAP.quarters.length + 1;
+  container.innerHTML = '';
+
+  const grid = document.createElement('div');
+  grid.className = 'heatmap-grid';
+  grid.style.gridTemplateColumns = `80px repeat(${HEATMAP.quarters.length}, 1fr)`;
+
+  // Header row
+  grid.innerHTML += '<div class="heatmap-label"></div>';
+  HEATMAP.quarters.forEach(q => {
+    grid.innerHTML += `<div class="heatmap-label">${q}</div>`;
+  });
+
+  // Find min/max for colour scaling
+  const allVals = HEATMAP.data.flat();
+  const minVal = Math.min(...allVals);
+  const maxVal = Math.max(...allVals);
+
+  HEATMAP.types.forEach((type, ti) => {
+    grid.innerHTML += `<div class="heatmap-label" style="text-align:right; padding-right:8px; color:var(--text-secondary)">${type}</div>`;
+    HEATMAP.data[ti].forEach(val => {
+      const t = (val - minVal) / (maxVal - minVal);
+      let r, g, b;
+      if (t < 0.5) {
+        const p = t * 2;
+        r = Math.round(30 + p * (20 - 30));
+        g = Math.round(41 + p * (184 - 41));
+        b = Math.round(59 + p * (166 - 59));
+      } else {
+        const p = (t - 0.5) * 2;
+        r = Math.round(20 + p * (251 - 20));
+        g = Math.round(184 + p * (191 - 184));
+        b = Math.round(166 + p * (36 - 166));
+      }
+      const bg = `rgba(${r},${g},${b},0.7)`;
+      const fg = t > 0.6 ? '#1E293B' : '#F1F5F9';
+      grid.innerHTML += `<div class="heatmap-cell" style="background:${bg}; color:${fg}" title="${type} ${HEATMAP.quarters[HEATMAP.data[ti].indexOf(val)]}: ${val} cases">${val}</div>`;
+    });
+  });
+
+  container.appendChild(grid);
+}
+
+// ─── BEHAVIOUR CHARTS ───────────────────────
+function initBehaviourCharts() {
+  destroyChart('beh-timing');
+  charts['beh-timing'] = new Chart(document.getElementById('beh-timing-chart'), {
+    type: 'bar',
+    data: {
+      labels: ['< 1 month', '1–3 months', '3–6 months', '6–12 months', '1–2 years', '2+ years'],
+      datasets: [{
+        label: 'Members',
+        data: [487, 1124, 893, 542, 298, 118],
+        backgroundColor: [
+          COLORS.purple,
+          'rgba(167,139,250,0.85)',
+          'rgba(167,139,250,0.7)',
+          'rgba(167,139,250,0.55)',
+          'rgba(167,139,250,0.4)',
+          'rgba(167,139,250,0.25)'
+        ],
+        borderRadius: 6,
+        borderSkipped: false,
+      }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: {
+        y: { beginAtZero: true, title: { display: true, text: 'Members' } },
+        x: { title: { display: true, text: 'Time from Quote to Retirement' } }
+      }
+    }
+  });
+
+  destroyChart('beh-ageband');
+  charts['beh-ageband'] = new Chart(document.getElementById('beh-ageband-chart'), {
+    type: 'bar',
+    data: {
+      labels: ['Under 55', '55–59', '60–64', '65–69', '70+'],
+      datasets: [
+        {
+          label: 'P25–P75 Range',
+          data: [[56,203],[34,138],[42,156],[49,182],[21,104]],
+          backgroundColor: 'rgba(56,189,248,0.2)',
+          borderColor: COLORS.blue,
+          borderWidth: 1,
+          borderRadius: 4,
+          borderSkipped: false,
+        },
+        {
+          label: 'Median',
+          data: [112, 72, 84, 98, 54],
+          type: 'line',
+          borderColor: COLORS.purple,
+          backgroundColor: COLORS.purple,
+          borderWidth: 2.5,
+          pointRadius: 6,
+          pointHoverRadius: 8,
+          pointBackgroundColor: COLORS.purple,
+          fill: false,
+          order: 0,
+        }
+      ]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { position: 'top' } },
+      scales: {
+        y: { beginAtZero: true, title: { display: true, text: 'Days' } },
+      }
+    }
+  });
+
+  destroyChart('beh-multiplier');
+  charts['beh-multiplier'] = new Chart(document.getElementById('beh-multiplier-chart'), {
+    type: 'bar',
+    data: {
+      labels: ['Scheme A','Scheme B','Scheme C','Scheme D','Scheme E','Scheme F','Overall'],
+      datasets: [{
+        label: 'Quotes per Retirement',
+        data: [1.34, 1.28, 1.42, 1.21, 1.38, 1.51, 1.32],
+        backgroundColor: [COLORS.teal, COLORS.teal, COLORS.teal, COLORS.teal, COLORS.teal, COLORS.teal, COLORS.amber],
+        borderRadius: 4,
+        borderSkipped: false,
+      }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: {
+        y: { beginAtZero: true, max: 2, title: { display: true, text: 'Multiplier' } },
+      }
+    }
+  });
+
+  destroyChart('beh-scheme');
+  charts['beh-scheme'] = new Chart(document.getElementById('beh-scheme-chart'), {
+    type: 'bar',
+    data: {
+      labels: ['Scheme A','Scheme B','Scheme C','Scheme D','Scheme E','Scheme F'],
+      datasets: [{
+        label: 'Median Days',
+        data: [82, 94, 76, 88, 102, 68],
+        backgroundColor: COLORS.purple,
+        borderRadius: 4,
+        borderSkipped: false,
+      }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: {
+        y: { beginAtZero: true, title: { display: true, text: 'Days' } },
+      }
+    }
+  });
+
+  // Register data labels
+  LABEL_CFG['beh-timing-chart'] = [{}];
+  LABEL_CFG['beh-ageband-chart'] = [null, { formatter: (v) => v + 'd', color: COLORS.purple, fontSize: 11 }]; // skip range bars, label median line
+  LABEL_CFG['beh-multiplier-chart'] = [{ formatter: (v) => v.toFixed(2) + 'x' }];
+  LABEL_CFG['beh-scheme-chart'] = [{ formatter: (v) => v + 'd' }];
+}
+
+// ─── PROCESSING CHARTS ──────────────────────
+function initProcessingCharts() {
+  destroyChart('proc-daily');
+  charts['proc-daily'] = new Chart(document.getElementById('proc-daily-chart'), {
+    type: 'bar',
+    data: {
+      labels: DAILY_LABELS,
+      datasets: [{
+        label: 'Switches',
+        data: DAILY_VALUES,
+        backgroundColor: DAILY_WEEKEND.map(w => w ? COLORS.amberAlpha : 'rgba(56,189,248,0.6)'),
+        borderRadius: 3,
+        borderSkipped: false,
+      }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: {
+        y: { beginAtZero: true, title: { display: true, text: 'Switches' } },
+        x: { ticks: { maxRotation: 45, font: { size: 10 } } }
+      }
+    }
+  });
+
+  destroyChart('proc-dow');
+  charts['proc-dow'] = new Chart(document.getElementById('proc-dow-chart'), {
+    type: 'bar',
+    data: {
+      labels: DOW_LABELS,
+      datasets: [{
+        label: 'Avg Switches',
+        data: DOW_VALUES,
+        backgroundColor: DOW_LABELS.map(d => (d === 'Sat' || d === 'Sun') ? COLORS.amber : COLORS.blue),
+        borderRadius: 6,
+        borderSkipped: false,
+      }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: { y: { beginAtZero: true, title: { display: true, text: 'Avg Switches / Day' } } }
+    }
+  });
+
+  destroyChart('proc-monthly');
+  charts['proc-monthly'] = new Chart(document.getElementById('proc-monthly-chart'), {
+    type: 'line',
+    data: {
+      labels: MONTHLY_PROJ,
+      datasets: [
+        { label: '90% CI', data: MONTHLY_HIGH, borderColor: 'transparent', backgroundColor: COLORS.blueAlpha, fill: '+1', pointRadius: 0 },
+        { label: '', data: MONTHLY_LOW, borderColor: 'transparent', backgroundColor: 'transparent', fill: false, pointRadius: 0 },
+        { label: 'Projected', data: MONTHLY_EST, borderColor: COLORS.blue, borderWidth: 2.5, fill: false, pointRadius: 3, pointBackgroundColor: COLORS.blue },
+      ]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      interaction: { intersect: false, mode: 'index' },
+      plugins: { legend: { labels: { filter: (item) => item.text !== '' } } },
+      scales: { y: { beginAtZero: false } }
+    }
+  });
+
+  destroyChart('proc-ratio');
+  charts['proc-ratio'] = new Chart(document.getElementById('proc-ratio-chart'), {
+    type: 'doughnut',
+    data: {
+      labels: ['Weekday Volume', 'Weekend Volume'],
+      datasets: [{
+        data: [85.2, 14.8],
+        backgroundColor: [COLORS.blue, COLORS.amber],
+        borderWidth: 0,
+        hoverOffset: 8,
+      }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      cutout: '65%',
+      plugins: {
+        legend: { position: 'bottom' },
+        tooltip: {
+          callbacks: {
+            label: (ctx) => `${ctx.label}: ${ctx.parsed}%`
+          }
+        }
+      }
+    }
+  });
+
+  // Register data labels
+  LABEL_CFG['proc-daily-chart'] = [{ fontSize: 9 }];
+  LABEL_CFG['proc-dow-chart'] = [{ formatter: (v) => v.toFixed(1) }];
+}
+
+// ─── AUDIT CHARTS ───────────────────────────
+function initAuditCharts() {
+  destroyChart('audit-status');
+  charts['audit-status'] = new Chart(document.getElementById('audit-status-chart'), {
+    type: 'doughnut',
+    data: {
+      labels: ['Exact Match', 'Formula Diff', 'Value Diff', 'Missing', 'New Fields'],
+      datasets: [{
+        data: [152, 23, 7, 6, 4],
+        backgroundColor: [COLORS.green, COLORS.amber, COLORS.orange, COLORS.red, COLORS.blue],
+        borderWidth: 0,
+        hoverOffset: 8,
+      }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      cutout: '58%',
+      plugins: {
+        legend: { position: 'right', labels: { padding: 12 } },
+        tooltip: { callbacks: { label: (ctx) => `${ctx.label}: ${ctx.parsed} fields (${(ctx.parsed/192*100).toFixed(1)}%)` } }
+      }
+    }
+  });
+
+  destroyChart('audit-sheet');
+  const sheetLabels = ['Input','Normal Ret','Early Ret','Late Ret','PCLS+Res','Output','Triv Comm','User Input','User Out','Version'];
+  const sheetExact =  [26, 15, 17, 15, 11, 10, 6, 18, 14, 8];
+  const sheetFormula = [2, 8, 5, 4, 3, 3, 1, 0, 0, 0];
+  const sheetValue =  [1, 3, 2, 2, 1, 1, 1, 0, 0, 0];
+  charts['audit-sheet'] = new Chart(document.getElementById('audit-sheet-chart'), {
+    type: 'bar',
+    data: {
+      labels: sheetLabels,
+      datasets: [
+        { label: 'Exact', data: sheetExact, backgroundColor: COLORS.green, borderRadius: 3, borderSkipped: false },
+        { label: 'Formula Diff', data: sheetFormula, backgroundColor: COLORS.amber, borderRadius: 3, borderSkipped: false },
+        { label: 'Value Diff', data: sheetValue, backgroundColor: COLORS.orange, borderRadius: 3, borderSkipped: false },
+      ]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { position: 'top' } },
+      scales: {
+        x: { stacked: true, ticks: { font: { size: 10 }, maxRotation: 45 } },
+        y: { stacked: true, beginAtZero: true, title: { display: true, text: 'Fields' } }
+      }
+    }
+  });
+
+  LABEL_CFG['audit-sheet-chart'] = null; // no labels needed — stacked bars are clear enough
+}
+
+// ─── INIT CHARTS PER PAGE ───────────────────
+
+function initChartsForPage(page) {
+  // Use setTimeout to guarantee the browser has painted the visible page
+  setTimeout(() => {
+    switch (page) {
+      case 'overview': initOverviewCharts(); break;
+      case 'pipeline': initPipelineCharts(); break;
+      case 'operations': initOpsCharts(); break;
+      case 'behaviour': initBehaviourCharts(); break;
+      case 'processing': initProcessingCharts(); break;
+      case 'audit': initAuditCharts(); break;
+    }
+  }, 50);
+}
+
+// Init overview on load (it's already visible)
+setTimeout(() => { initOverviewCharts(); }, 50);
+
+
+</script>
+</body>
+</html>
