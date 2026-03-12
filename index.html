@@ -668,6 +668,98 @@ body {
   .chart-row.cols-2, .chart-row.cols-1-2, .chart-row.cols-2-1 { grid-template-columns: 1fr; }
   .insight-row { grid-template-columns: 1fr; }
 }
+
+/* ─── TABLET ─── */
+@media (max-width: 768px) {
+  .nav {
+    flex-direction: column;
+    height: auto;
+    padding: 12px 1rem;
+    gap: 10px;
+    align-items: stretch;
+  }
+  .nav-brand { justify-content: center; }
+  .nav-tabs {
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 2px;
+    padding: 3px;
+  }
+  .nav-tab {
+    padding: 6px 12px;
+    font-size: 11px;
+  }
+  .nav-meta { text-align: center; font-size: 11px; }
+  .main { padding-top: 160px; }
+  .page { padding: 0 1rem 2rem; }
+  .page-header h1 { font-size: 22px; }
+  .page-header p { font-size: 13px; }
+  .metrics-grid.cols-3,
+  .metrics-grid.cols-4,
+  .metrics-grid.cols-5 { grid-template-columns: repeat(2, 1fr); }
+  .metric-card { padding: 16px; }
+  .metric-value { font-size: 28px; }
+  .chart-card { padding: 16px; }
+  .sub-tabs { flex-wrap: wrap; gap: 2px; }
+  .sub-tab { padding: 8px 16px; font-size: 12px; }
+  /* Semantic explainer 3-panel → stack */
+  #semantic-explainer {
+    grid-template-columns: 1fr !important;
+    gap: 0 !important;
+  }
+  #semantic-explainer > div[style*="font-size:24px"] {
+    padding: 8px 0 !important;
+    font-size: 18px !important;
+    text-align: center;
+  }
+  /* Data table horizontal scroll */
+  .data-table { font-size: 12px; }
+  .data-table th, .data-table td { padding: 8px 6px; }
+  /* Heatmap scroll */
+  .heatmap-grid { overflow-x: auto; min-width: 600px; }
+  .chart-card:has(.heatmap-grid) { overflow-x: auto; }
+}
+
+/* ─── PHONE ─── */
+@media (max-width: 480px) {
+  .nav { padding: 10px 0.75rem; gap: 8px; }
+  .nav-logo { width: 28px; height: 28px; font-size: 14px; border-radius: 8px; }
+  .nav-title { font-size: 13px; }
+  .nav-subtitle { font-size: 9px; }
+  .nav-tabs { gap: 2px; padding: 2px; }
+  .nav-tab { padding: 5px 8px; font-size: 10px; }
+  .main { padding-top: 180px; }
+  .page { padding: 0 0.75rem 1.5rem; }
+  .page-header h1 { font-size: 18px; }
+  .page-header p { font-size: 12px; }
+  .metrics-grid.cols-2,
+  .metrics-grid.cols-3,
+  .metrics-grid.cols-4,
+  .metrics-grid.cols-5 { grid-template-columns: 1fr; }
+  .metric-card { padding: 14px; }
+  .metric-value { font-size: 24px; }
+  .metric-label { font-size: 11px; }
+  .metric-detail { font-size: 10px; }
+  .chart-card { padding: 12px; }
+  .chart-title { font-size: 14px; }
+  .chart-subtitle { font-size: 11px; }
+  .section-label { font-size: 11px; }
+  .callout { flex-direction: column; gap: 8px; padding: 12px; font-size: 12px; }
+  .callout-icon { flex-shrink: 0; }
+  .insight-card { padding: 14px 14px 14px 18px; }
+  .insight-title { font-size: 13px; }
+  .insight-text { font-size: 12px; }
+  .sub-tab { padding: 6px 12px; font-size: 11px; }
+  /* Pipeline viz icons */
+  .page .chart-card div[style*="display:flex"][style*="gap:0"] {
+    flex-direction: column !important;
+    gap: 8px !important;
+  }
+  .page .chart-card div[style*="font-size:20px"][style*="padding:0 8px"] {
+    transform: rotate(90deg);
+    padding: 0 !important;
+  }
+}
 </style>
 </head>
 <body>
