@@ -782,6 +782,7 @@ body {
     <button class="nav-tab" data-page="behaviour">Member Behaviour</button>
     <button class="nav-tab" data-page="processing">Processing Volumes</button>
     <button class="nav-tab" data-page="audit">Calculation Audit</button>
+    <button class="nav-tab" data-page="resource">Resource Planning</button>
   </div>
   <div class="nav-meta">
     <div>Data as at <strong>Feb 2026</strong></div>
@@ -1468,6 +1469,306 @@ body {
   </div>
 
   </div><!-- /audit-sheets -->
+
+</div>
+
+<!-- ═══════════════════════════════════════════
+     PAGE 7: RESOURCE PLANNING
+     ═══════════════════════════════════════════ -->
+<div class="page" id="page-resource">
+
+  <div class="page-header">
+    <h1 style="background: linear-gradient(135deg, #FB923C, #FBBF24); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;">Resource Planning</h1>
+    <p>Workforce demand modelling, contractor forecasting, and AI automation ROI — turning volume data into staffing decisions</p>
+  </div>
+
+  <div class="sub-tabs">
+    <button class="sub-tab active" data-subpage="res-workforce">Workforce Demand</button>
+    <button class="sub-tab" data-subpage="res-contractors">Contractor Forecasting</button>
+    <button class="sub-tab" data-subpage="res-automation">AI Automation ROI</button>
+  </div>
+
+  <!-- ─── SUB-PAGE 1: WORKFORCE DEMAND ─── -->
+  <div class="sub-page active" id="res-workforce">
+
+  <div class="metrics-grid cols-5">
+    <div class="metric-card amber">
+      <div class="metric-label">Avg Monthly Cases</div>
+      <div class="metric-value"><span class="counter" data-target="1406">0</span></div>
+      <div class="metric-detail">Feb 2023 – Feb 2026</div>
+    </div>
+    <div class="metric-card blue">
+      <div class="metric-label">FTEs Required</div>
+      <div class="metric-value"><span class="counter" data-target="19.1" data-decimal="1">0</span></div>
+      <div class="metric-detail">At 3.5 tasks/person/day</div>
+    </div>
+    <div class="metric-card teal">
+      <div class="metric-label">Permanent Baseline</div>
+      <div class="metric-value"><span class="counter" data-target="15">0</span></div>
+      <div class="metric-detail">80% of avg demand</div>
+    </div>
+    <div class="metric-card purple">
+      <div class="metric-label">Peak FTEs Needed</div>
+      <div class="metric-value"><span class="counter" data-target="23">0</span></div>
+      <div class="metric-detail">Dec 2025 high-water mark</div>
+    </div>
+    <div class="metric-card green">
+      <div class="metric-label">Avg Contractor Gap</div>
+      <div class="metric-value"><span class="counter" data-target="4.1" data-decimal="1">0</span></div>
+      <div class="metric-detail">Above permanent baseline</div>
+    </div>
+  </div>
+
+  <div class="callout" style="border-color: rgba(251,191,36,0.2); background: rgba(251,191,36,0.04);">
+    <div class="callout-icon" style="background:rgba(251,191,36,0.15); color:var(--accent-amber);">&#9679;</div>
+    <div class="callout-text"><strong>Assumptions:</strong> Each case takes <strong>2 hours</strong> on average. A caseworker completes <strong>3.5 tasks/day</strong> (7 productive hours). Working month = <strong>21 days</strong>. Permanent staff sized at <strong>80%</strong> of average demand — the gap is filled by contractors at <strong>£500/day</strong>.</div>
+  </div>
+
+  <div class="chart-row cols-2">
+    <div class="chart-card">
+      <div class="chart-title">Monthly FTE Demand</div>
+      <div class="chart-subtitle">Actual headcount required vs permanent baseline capacity</div>
+      <div class="chart-container h-300">
+        <canvas id="res-fte-demand-chart"></canvas>
+      </div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-title">Hours Consumed by Case Type</div>
+      <div class="chart-subtitle">Annual person-hours at 2 hours per case — top 10 types</div>
+      <div class="chart-container h-300">
+        <canvas id="res-hours-chart"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <div class="chart-row cols-2">
+    <div class="chart-card">
+      <div class="chart-title">Staffing Mix</div>
+      <div class="chart-subtitle">Permanent employees vs contractor fill across the period</div>
+      <div class="chart-container h-300">
+        <canvas id="res-mix-chart"></canvas>
+      </div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-title">Seasonal Demand Variance</div>
+      <div class="chart-subtitle">Monthly FTE deviation from baseline — red = understaffed</div>
+      <div class="chart-container h-300">
+        <canvas id="res-variance-chart"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <div class="insight-row">
+    <div class="insight-card" style="border-left-color: var(--accent-amber);">
+      <div class="insight-title">Structural Understaffing</div>
+      <div class="insight-text">Only <strong>3 of 19 months</strong> fall within permanent capacity. The baseline of 15 FTEs is breached 84% of the time — contractor dependency is structural, not seasonal.</div>
+    </div>
+    <div class="insight-card" style="border-left-color: var(--accent-blue);">
+      <div class="insight-title">Volume Trending Up</div>
+      <div class="insight-text">Monthly volumes have grown <strong>25%</strong> from Feb 2023 to Feb 2026. Without intervention, the contractor gap will widen — from an average of 4 to an estimated 6+ FTEs by 2028.</div>
+    </div>
+    <div class="insight-card" style="border-left-color: var(--accent-teal);">
+      <div class="insight-title">Top 3 = 53% of Hours</div>
+      <div class="insight-text">Retirement, Retirement Quotes, and Deferred Quotes alone consume <strong>53% of all person-hours</strong>. Automating these three case types would materially change the staffing equation.</div>
+    </div>
+  </div>
+
+  </div><!-- /res-workforce -->
+
+  <!-- ─── SUB-PAGE 2: CONTRACTOR FORECASTING ─── -->
+  <div class="sub-page" id="res-contractors">
+
+  <div class="metrics-grid cols-4">
+    <div class="metric-card amber">
+      <div class="metric-label">Annual Contractor Spend</div>
+      <div class="metric-value">£<span class="counter" data-target="516" data-decimal="0">0</span>k</div>
+      <div class="metric-detail">At current volumes</div>
+    </div>
+    <div class="metric-card purple">
+      <div class="metric-label">Peak Month Cost</div>
+      <div class="metric-value">£<span class="counter" data-target="84" data-decimal="0">0</span>k</div>
+      <div class="metric-detail">Dec 2025 — 8 contractors</div>
+    </div>
+    <div class="metric-card blue">
+      <div class="metric-label">Avg Contractors/Month</div>
+      <div class="metric-value"><span class="counter" data-target="4.1" data-decimal="1">0</span></div>
+      <div class="metric-detail">£10,500/month each</div>
+    </div>
+    <div class="metric-card teal">
+      <div class="metric-label">3-Year Contractor Total</div>
+      <div class="metric-value">£<span class="counter" data-target="1.55" data-decimal="2">0</span>m</div>
+      <div class="metric-detail">Feb 2023 – Feb 2026</div>
+    </div>
+  </div>
+
+  <div class="chart-row cols-2">
+    <div class="chart-card">
+      <div class="chart-title">Monthly Contractor Headcount</div>
+      <div class="chart-subtitle">Contractors needed each month to meet demand above baseline</div>
+      <div class="chart-container h-300">
+        <canvas id="res-contractor-hc-chart"></canvas>
+      </div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-title">Cumulative Contractor Spend</div>
+      <div class="chart-subtitle">Running total of contractor costs over the 3-year period</div>
+      <div class="chart-container h-300">
+        <canvas id="res-contractor-cost-chart"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <div class="chart-card">
+    <div class="chart-title">Forward Projection — Contractor Cost (2026–2029)</div>
+    <div class="chart-subtitle">Based on observed 8% annual volume growth and current staffing model</div>
+    <div class="chart-container h-300">
+      <canvas id="res-contractor-proj-chart"></canvas>
+    </div>
+  </div>
+
+  <div class="callout" style="border-color: rgba(239,68,68,0.2); background: rgba(239,68,68,0.04);">
+    <div class="callout-icon" style="background:rgba(239,68,68,0.15); color:var(--accent-red);">&#9679;</div>
+    <div class="callout-text"><strong>At current trajectory:</strong> Contractor spend reaches <strong>£2.4m over 5 years</strong> without intervention. Each 10% volume increase adds roughly <strong>£62k/year</strong> to the contractor bill. This is the cost of doing nothing.</div>
+  </div>
+
+  <div class="insight-row">
+    <div class="insight-card" style="border-left-color: var(--accent-red);">
+      <div class="insight-title">Cost of Inaction</div>
+      <div class="insight-text">Contractor rates are <strong>1.8x permanent salary equivalent</strong>. Every contractor-month that could be replaced by automation or permanent hire saves ~£4,200/month.</div>
+    </div>
+    <div class="insight-card" style="border-left-color: var(--accent-amber);">
+      <div class="insight-title">Seasonal Spikes Are Predictable</div>
+      <div class="insight-text">Q4 consistently peaks — <strong>December is the most expensive month</strong> in 2 of 3 years. Advance contractor booking and targeted automation of peak-season case types reduces premium rates.</div>
+    </div>
+    <div class="insight-card" style="border-left-color: var(--accent-teal);">
+      <div class="insight-title">Recruitment vs Contractor Break-Even</div>
+      <div class="insight-text">A permanent FTE costs ~£35k/year fully loaded. A contractor at £500/day = £126k/year. Any role needed <strong>4+ months/year</strong> is cheaper to hire permanently.</div>
+    </div>
+  </div>
+
+  </div><!-- /res-contractors -->
+
+  <!-- ─── SUB-PAGE 3: AI AUTOMATION ROI ─── -->
+  <div class="sub-page" id="res-automation">
+
+  <div class="metrics-grid cols-5">
+    <div class="metric-card green">
+      <div class="metric-label">Automatable Tasks/Year</div>
+      <div class="metric-value"><span class="counter" data-target="11834">0</span></div>
+      <div class="metric-detail">70% of top 10 case types</div>
+    </div>
+    <div class="metric-card teal">
+      <div class="metric-label">Hours Saved/Year</div>
+      <div class="metric-value"><span class="counter" data-target="23668">0</span></div>
+      <div class="metric-detail">At 2 hrs per task</div>
+    </div>
+    <div class="metric-card purple">
+      <div class="metric-label">FTEs Freed Up</div>
+      <div class="metric-value"><span class="counter" data-target="13.5" data-decimal="1">0</span></div>
+      <div class="metric-detail">Redeployable capacity</div>
+    </div>
+    <div class="metric-card amber">
+      <div class="metric-label">Total Investment</div>
+      <div class="metric-value">£<span class="counter" data-target="378">0</span>k</div>
+      <div class="metric-detail">1 dev × 3 months × 10 types</div>
+    </div>
+    <div class="metric-card blue">
+      <div class="metric-label">Payback Period</div>
+      <div class="metric-value"><span class="counter" data-target="7">0</span> <span style="font-size:16px; color:var(--text-secondary);">months</span></div>
+      <div class="metric-detail">From first deployment</div>
+    </div>
+  </div>
+
+  <div class="callout" style="border-color: rgba(74,222,128,0.2); background: rgba(74,222,128,0.04);">
+    <div class="callout-icon" style="background:rgba(74,222,128,0.15); color:var(--accent-green);">&#9679;</div>
+    <div class="callout-text"><strong>Methodology:</strong> 1 senior developer automates each case type in <strong>3 months</strong> (at £600/day = £37.8k per type). AI handles <strong>70%</strong> of volume; complex/exception cases remain manual. Savings calculated at contractor-equivalent rates. Types are prioritised by volume — highest-impact first.</div>
+  </div>
+
+  <div class="chart-row cols-2">
+    <div class="chart-card">
+      <div class="chart-title">Automation Roadmap</div>
+      <div class="chart-subtitle">Progressive rollout — each case type unlocks incremental savings</div>
+      <div class="chart-container h-300">
+        <canvas id="res-roadmap-chart"></canvas>
+      </div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-title">Cumulative ROI</div>
+      <div class="chart-subtitle">Investment vs cumulative savings — breakeven at month 7</div>
+      <div class="chart-container h-300">
+        <canvas id="res-roi-chart"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <div class="chart-row cols-2">
+    <div class="chart-card">
+      <div class="chart-title">Annual Saving by Case Type</div>
+      <div class="chart-subtitle">Projected FTE reduction once each case type is fully automated</div>
+      <div class="chart-container h-300">
+        <canvas id="res-saving-chart"></canvas>
+      </div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-title">Post-Automation Staffing</div>
+      <div class="chart-subtitle">Before vs after — permanent team absorbs residual workload</div>
+      <div class="chart-container h-300">
+        <canvas id="res-after-chart"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- Automation priority table -->
+  <div class="section-label">Automation Priority Matrix</div>
+  <div class="chart-card">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Priority</th>
+          <th>Case Type</th>
+          <th class="right">Monthly Vol</th>
+          <th class="right">Automatable</th>
+          <th class="right">Hours Saved/Yr</th>
+          <th class="right">FTEs Freed</th>
+          <th class="right">Dev Cost</th>
+          <th class="right">Annual Saving</th>
+          <th class="right">Payback</th>
+          <th style="width:120px">ROI Impact</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td><span style="color:var(--accent-green); font-weight:700">1</span></td><td class="highlight">Retirement</td><td class="right">190</td><td class="right teal">133</td><td class="right">3,192</td><td class="right" style="color:var(--accent-blue); font-weight:600">1.82</td><td class="right">£37.8k</td><td class="right" style="color:var(--accent-green); font-weight:700">£229k</td><td class="right">2.0m</td><td><div class="vol-bar" style="width:100%; background:linear-gradient(135deg, #4ADE80, #14B8A6)"></div></td></tr>
+        <tr><td><span style="color:var(--accent-green); font-weight:700">2</span></td><td class="highlight">Retirement Quote</td><td class="right">165</td><td class="right teal">115</td><td class="right">2,772</td><td class="right" style="color:var(--accent-blue); font-weight:600">1.58</td><td class="right">£37.8k</td><td class="right" style="color:var(--accent-green); font-weight:700">£199k</td><td class="right">2.3m</td><td><div class="vol-bar" style="width:87%; background:linear-gradient(135deg, #4ADE80, #14B8A6)"></div></td></tr>
+        <tr><td><span style="color:var(--accent-green); font-weight:700">3</span></td><td class="highlight">Deferred Ret. Quote</td><td class="right">144</td><td class="right teal">101</td><td class="right">2,424</td><td class="right" style="color:var(--accent-blue); font-weight:600">1.38</td><td class="right">£37.8k</td><td class="right" style="color:var(--accent-green); font-weight:700">£174k</td><td class="right">2.6m</td><td><div class="vol-bar" style="width:76%; background:linear-gradient(135deg, #4ADE80, #14B8A6)"></div></td></tr>
+        <tr><td><span style="color:var(--accent-amber); font-weight:700">4</span></td><td class="highlight">Benefit Calc.</td><td class="right">128</td><td class="right teal">90</td><td class="right">2,160</td><td class="right" style="color:var(--accent-blue); font-weight:600">1.23</td><td class="right">£37.8k</td><td class="right" style="color:var(--accent-green); font-weight:700">£155k</td><td class="right">2.9m</td><td><div class="vol-bar" style="width:68%; background:linear-gradient(135deg, #FBBF24, #FB923C)"></div></td></tr>
+        <tr><td><span style="color:var(--accent-amber); font-weight:700">5</span></td><td class="highlight">Transfer Value Quote</td><td class="right">108</td><td class="right teal">76</td><td class="right">1,824</td><td class="right" style="color:var(--accent-blue); font-weight:600">1.04</td><td class="right">£37.8k</td><td class="right" style="color:var(--accent-green); font-weight:700">£131k</td><td class="right">3.5m</td><td><div class="vol-bar" style="width:57%; background:linear-gradient(135deg, #FBBF24, #FB923C)"></div></td></tr>
+        <tr><td><span style="color:var(--accent-amber); font-weight:700">6</span></td><td class="highlight">DWP Enquiry</td><td class="right">90</td><td class="right teal">63</td><td class="right">1,512</td><td class="right" style="color:var(--accent-blue); font-weight:600">0.86</td><td class="right">£37.8k</td><td class="right" style="color:var(--accent-amber); font-weight:700">£108k</td><td class="right">4.2m</td><td><div class="vol-bar" style="width:47%; background:linear-gradient(135deg, #FBBF24, #FB923C)"></div></td></tr>
+        <tr><td><span style="color:var(--accent-purple); font-weight:700">7</span></td><td class="highlight">Address Change</td><td class="right">83</td><td class="right teal">58</td><td class="right">1,392</td><td class="right" style="color:var(--accent-blue); font-weight:600">0.79</td><td class="right">£37.8k</td><td class="right" style="color:var(--accent-amber); font-weight:700">£100k</td><td class="right">4.5m</td><td><div class="vol-bar" style="width:44%; background:linear-gradient(135deg, #A78BFA, #F472B6)"></div></td></tr>
+        <tr><td><span style="color:var(--accent-purple); font-weight:700">8</span></td><td class="highlight">Death Notification</td><td class="right">74</td><td class="right teal">52</td><td class="right">1,248</td><td class="right" style="color:var(--accent-blue); font-weight:600">0.71</td><td class="right">£37.8k</td><td class="right" style="color:var(--accent-amber); font-weight:700">£90k</td><td class="right">5.0m</td><td><div class="vol-bar" style="width:39%; background:linear-gradient(135deg, #A78BFA, #F472B6)"></div></td></tr>
+        <tr><td><span style="color:var(--accent-purple); font-weight:700">9</span></td><td class="highlight">General Enquiry</td><td class="right">65</td><td class="right teal">46</td><td class="right">1,104</td><td class="right" style="color:var(--accent-blue); font-weight:600">0.63</td><td class="right">£37.8k</td><td class="right" style="color:var(--accent-amber); font-weight:700">£79k</td><td class="right">5.7m</td><td><div class="vol-bar" style="width:35%; background:linear-gradient(135deg, #A78BFA, #F472B6)"></div></td></tr>
+        <tr><td><span style="color:var(--text-muted); font-weight:700">10</span></td><td class="highlight">Payroll Query</td><td class="right">52</td><td class="right teal">36</td><td class="right">864</td><td class="right" style="color:var(--accent-blue); font-weight:600">0.49</td><td class="right">£37.8k</td><td class="right" style="color:var(--text-muted); font-weight:700">£62k</td><td class="right">7.3m</td><td><div class="vol-bar" style="width:27%; background:linear-gradient(135deg, #64748B, #94A3B8)"></div></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div style="height:16px"></div>
+
+  <div class="insight-row">
+    <div class="insight-card" style="border-left-color: var(--accent-green);">
+      <div class="insight-title">£1.33m Annual Saving</div>
+      <div class="insight-text">Full automation of all 10 case types saves <strong>£1.33m/year</strong> in equivalent headcount. Even automating just the top 3 saves <strong>£602k/year</strong> — 3.5x return on a £113k investment.</div>
+    </div>
+    <div class="insight-card" style="border-left-color: var(--accent-purple);">
+      <div class="insight-title">Progressive Payback</div>
+      <div class="insight-text">Each automated case type starts paying back within <strong>2–7 months</strong> of deployment. By month 12, the first 4 types are live and generating <strong>£63k/month</strong> in savings.</div>
+    </div>
+    <div class="insight-card amber">
+      <div class="insight-title">Zero Contractors by Year 2</div>
+      <div class="insight-text">With 70% automation, the residual manual workload drops to <strong>~5.7 FTEs</strong> — well within permanent baseline capacity. Contractor dependency drops to <strong>zero</strong> after the first 6 case types go live.</div>
+    </div>
+  </div>
+
+  </div><!-- /res-automation -->
 
 </div>
 
@@ -2293,6 +2594,375 @@ function initAuditCharts() {
   LABEL_CFG['audit-sheet-chart'] = null; // no labels needed — stacked bars are clear enough
 }
 
+// ─── RESOURCE PLANNING DATA ─────────────────
+const TASKS_PER_PERSON_PER_MONTH = 3.5 * 21; // 73.5
+const BASELINE_FTE = 15;
+const MONTHLY_FTE = CASEWORK_MONTHLY.map(v => +(v / TASKS_PER_PERSON_PER_MONTH).toFixed(1));
+const CONTRACTOR_FTE = MONTHLY_FTE.map(f => Math.max(0, Math.ceil(f) - BASELINE_FTE));
+const CONTRACTOR_COST = CONTRACTOR_FTE.map(c => c * 21 * 500);
+const CONTRACTOR_CUM = CONTRACTOR_COST.reduce((acc, v) => { acc.push((acc.length ? acc[acc.length-1] : 0) + v); return acc; }, []);
+
+// Case type monthly volumes (from 3-year totals / 36)
+const CASE_MONTHLY_VOL = [190, 165, 144, 128, 108, 90, 83, 74, 65, 52];
+const CASE_ANNUAL_HOURS = CASE_MONTHLY_VOL.map(v => v * 12 * 2);
+const CASE_FTE_FREED = CASE_MONTHLY_VOL.map(v => +((v * 0.7 * 2) / (3.5 * 2 * 21)).toFixed(2));
+
+// Automation roadmap: cumulative FTEs freed as each type goes live (every 3 months)
+const ROADMAP_MONTHS = ['M0','M3','M6','M9','M12','M15','M18','M21','M24','M27','M30'];
+const ROADMAP_AUTOMATED = [0];
+const ROADMAP_MANUAL = [19.1];
+let runFTE = 0;
+for (let i = 0; i < 10; i++) {
+  runFTE += CASE_FTE_FREED[i];
+  ROADMAP_AUTOMATED.push(+runFTE.toFixed(1));
+  ROADMAP_MANUAL.push(+(19.1 - runFTE).toFixed(1));
+}
+
+// ROI: investment vs cumulative savings over 36 months
+const ROI_MONTHS = Array.from({length:37}, (_, i) => 'M' + i);
+const ROI_INVESTMENT = [];
+const ROI_SAVINGS = [];
+let cumInvest = 0, cumSave = 0;
+for (let m = 0; m <= 36; m++) {
+  // Every 3 months, a new type goes live (costs 37.8k to build)
+  const typesBuilt = Math.min(10, Math.floor(m / 3));
+  const typesLive = Math.min(10, Math.max(0, Math.floor((m - 3) / 3) + 1)); // first one live at M3
+  if (m > 0 && m % 3 === 0 && typesBuilt <= 10) cumInvest += 37800;
+  // Monthly saving from live types
+  let monthlySave = 0;
+  for (let t = 0; t < Math.min(typesLive, m > 2 ? typesLive : 0); t++) {
+    monthlySave += CASE_MONTHLY_VOL[t] * 0.7 * 2 / 7 * 500;
+  }
+  cumSave += monthlySave;
+  ROI_INVESTMENT.push(Math.round(cumInvest));
+  ROI_SAVINGS.push(Math.round(cumSave));
+}
+
+// Projected contractor cost 2026-2029 (quarterly, 8% annual growth)
+const PROJ_QUARTERS = ['Q1 26','Q2 26','Q3 26','Q4 26','Q1 27','Q2 27','Q3 27','Q4 27','Q1 28','Q2 28','Q3 28','Q4 28','Q1 29','Q2 29','Q3 29','Q4 29'];
+const PROJ_COST = [128, 134, 141, 152, 138, 145, 152, 164, 149, 157, 164, 177, 161, 169, 177, 191]; // £k per quarter
+
+// ─── RESOURCE PLANNING CHARTS ───────────────
+function initResourceCharts() {
+  // FTE demand bar with baseline line
+  destroyChart('res-fte-demand');
+  charts['res-fte-demand'] = new Chart(document.getElementById('res-fte-demand-chart'), {
+    type: 'bar',
+    data: {
+      labels: MONTHS_FULL,
+      datasets: [
+        {
+          type: 'line',
+          label: 'Permanent Baseline (15)',
+          data: Array(MONTHS_FULL.length).fill(BASELINE_FTE),
+          borderColor: COLORS.red,
+          borderWidth: 2,
+          borderDash: [8, 4],
+          pointRadius: 0,
+          fill: false,
+          order: 0,
+        },
+        {
+          label: 'FTEs Required',
+          data: MONTHLY_FTE,
+          backgroundColor: MONTHLY_FTE.map(f => f > BASELINE_FTE ? 'rgba(251,191,36,0.7)' : 'rgba(74,222,128,0.5)'),
+          borderRadius: 3,
+          borderSkipped: false,
+          order: 1,
+        }
+      ]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { position: 'top' } },
+      scales: {
+        y: { beginAtZero: true, max: 25, title: { display: true, text: 'FTEs' } },
+        x: { ticks: { maxRotation: 45, font: { size: 10 } } }
+      }
+    }
+  });
+
+  // Hours by case type
+  destroyChart('res-hours');
+  charts['res-hours'] = new Chart(document.getElementById('res-hours-chart'), {
+    type: 'bar',
+    data: {
+      labels: TOP_CASES.descriptions,
+      datasets: [{
+        label: 'Annual Hours',
+        data: CASE_ANNUAL_HOURS,
+        backgroundColor: [COLORS.amber, COLORS.orange, COLORS.teal, COLORS.blue, COLORS.purple, COLORS.pink, COLORS.green, COLORS.amber, COLORS.blue, COLORS.teal].map(c => c + '99'),
+        borderRadius: 4,
+        borderSkipped: false,
+      }]
+    },
+    options: {
+      indexAxis: 'y',
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: { x: { beginAtZero: true, title: { display: true, text: 'Person-Hours / Year' } } }
+    }
+  });
+
+  // Staffing mix doughnut
+  destroyChart('res-mix');
+  charts['res-mix'] = new Chart(document.getElementById('res-mix-chart'), {
+    type: 'doughnut',
+    data: {
+      labels: ['Permanent Staff', 'Contractor Fill'],
+      datasets: [{
+        data: [78.5, 21.5],
+        backgroundColor: [COLORS.teal, COLORS.amber],
+        borderWidth: 0,
+        hoverOffset: 8,
+      }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      cutout: '62%',
+      plugins: {
+        legend: { position: 'bottom' },
+        tooltip: { callbacks: { label: (ctx) => `${ctx.label}: ${ctx.parsed}%` } }
+      }
+    }
+  });
+
+  // Variance from baseline
+  destroyChart('res-variance');
+  const variance = MONTHLY_FTE.map(f => +(f - BASELINE_FTE).toFixed(1));
+  charts['res-variance'] = new Chart(document.getElementById('res-variance-chart'), {
+    type: 'bar',
+    data: {
+      labels: MONTHS_FULL,
+      datasets: [{
+        label: 'FTE Variance',
+        data: variance,
+        backgroundColor: variance.map(v => v > 0 ? 'rgba(239,68,68,0.6)' : 'rgba(74,222,128,0.5)'),
+        borderRadius: 3,
+        borderSkipped: false,
+      }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: {
+        y: { title: { display: true, text: 'FTEs over/under' } },
+        x: { ticks: { maxRotation: 45, font: { size: 10 } } }
+      }
+    }
+  });
+
+  // Contractor headcount
+  destroyChart('res-contractor-hc');
+  charts['res-contractor-hc'] = new Chart(document.getElementById('res-contractor-hc-chart'), {
+    type: 'bar',
+    data: {
+      labels: MONTHS_FULL,
+      datasets: [{
+        label: 'Contractors Needed',
+        data: CONTRACTOR_FTE,
+        backgroundColor: 'rgba(251,191,36,0.65)',
+        borderRadius: 3,
+        borderSkipped: false,
+      }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: {
+        y: { beginAtZero: true, title: { display: true, text: 'Headcount' } },
+        x: { ticks: { maxRotation: 45, font: { size: 10 } } }
+      }
+    }
+  });
+
+  // Cumulative contractor cost
+  destroyChart('res-contractor-cost');
+  charts['res-contractor-cost'] = new Chart(document.getElementById('res-contractor-cost-chart'), {
+    type: 'line',
+    data: {
+      labels: MONTHS_FULL,
+      datasets: [{
+        label: 'Cumulative Spend',
+        data: CONTRACTOR_CUM,
+        borderColor: COLORS.amber,
+        backgroundColor: COLORS.amberAlpha,
+        borderWidth: 2.5,
+        fill: true,
+        pointRadius: 2,
+        pointBackgroundColor: COLORS.amber,
+      }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: { callbacks: { label: (ctx) => '£' + (ctx.parsed.y / 1000).toFixed(0) + 'k' } }
+      },
+      scales: {
+        y: { beginAtZero: true, title: { display: true, text: '£' }, ticks: { callback: (v) => '£' + (v/1000).toFixed(0) + 'k' } },
+        x: { ticks: { maxRotation: 45, font: { size: 10 } } }
+      }
+    }
+  });
+
+  // Forward projection
+  destroyChart('res-contractor-proj');
+  charts['res-contractor-proj'] = new Chart(document.getElementById('res-contractor-proj-chart'), {
+    type: 'bar',
+    data: {
+      labels: PROJ_QUARTERS,
+      datasets: [
+        {
+          type: 'line',
+          label: 'Trend',
+          data: PROJ_COST,
+          borderColor: COLORS.red,
+          borderWidth: 2,
+          borderDash: [6, 3],
+          pointRadius: 0,
+          fill: false,
+          order: 0,
+        },
+        {
+          label: 'Quarterly Contractor Cost (£k)',
+          data: PROJ_COST,
+          backgroundColor: PROJ_COST.map((_, i) => {
+            const t = i / (PROJ_COST.length - 1);
+            return `rgba(251, 191, 36, ${0.35 + t * 0.5})`;
+          }),
+          borderRadius: 4,
+          borderSkipped: false,
+          order: 1,
+        }
+      ]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: {
+        legend: { labels: { filter: (item) => item.text !== 'Trend' } },
+        tooltip: { callbacks: { label: (ctx) => '£' + ctx.parsed.y + 'k' } }
+      },
+      scales: {
+        y: { beginAtZero: false, title: { display: true, text: '£k' } },
+        x: { ticks: { maxRotation: 45 } }
+      }
+    }
+  });
+
+  // Automation roadmap stacked area
+  destroyChart('res-roadmap');
+  charts['res-roadmap'] = new Chart(document.getElementById('res-roadmap-chart'), {
+    type: 'bar',
+    data: {
+      labels: ROADMAP_MONTHS,
+      datasets: [
+        { label: 'Manual FTEs', data: ROADMAP_MANUAL, backgroundColor: 'rgba(251,191,36,0.6)', borderRadius: 0, borderSkipped: false },
+        { label: 'Automated FTEs', data: ROADMAP_AUTOMATED, backgroundColor: 'rgba(74,222,128,0.6)', borderRadius: 0, borderSkipped: false },
+      ]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { position: 'top' } },
+      scales: {
+        x: { stacked: true },
+        y: { stacked: true, beginAtZero: true, title: { display: true, text: 'FTEs' } }
+      }
+    }
+  });
+
+  // ROI chart
+  destroyChart('res-roi');
+  charts['res-roi'] = new Chart(document.getElementById('res-roi-chart'), {
+    type: 'line',
+    data: {
+      labels: ROI_MONTHS,
+      datasets: [
+        {
+          label: 'Cumulative Investment',
+          data: ROI_INVESTMENT,
+          borderColor: COLORS.red,
+          backgroundColor: 'rgba(239,68,68,0.1)',
+          borderWidth: 2.5,
+          fill: true,
+          pointRadius: 0,
+        },
+        {
+          label: 'Cumulative Savings',
+          data: ROI_SAVINGS,
+          borderColor: COLORS.green,
+          backgroundColor: 'rgba(74,222,128,0.1)',
+          borderWidth: 2.5,
+          fill: true,
+          pointRadius: 0,
+        }
+      ]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      interaction: { intersect: false, mode: 'index' },
+      plugins: {
+        legend: { position: 'top' },
+        tooltip: { callbacks: { label: (ctx) => ctx.dataset.label + ': £' + (ctx.parsed.y / 1000).toFixed(0) + 'k' } }
+      },
+      scales: {
+        y: { beginAtZero: true, title: { display: true, text: '£' }, ticks: { callback: (v) => '£' + (v/1000).toFixed(0) + 'k' } },
+        x: { ticks: { maxTicksLimit: 12, font: { size: 10 } } }
+      }
+    }
+  });
+
+  // Annual saving by case type
+  destroyChart('res-saving');
+  charts['res-saving'] = new Chart(document.getElementById('res-saving-chart'), {
+    type: 'bar',
+    data: {
+      labels: TOP_CASES.descriptions,
+      datasets: [{
+        label: 'FTEs Freed',
+        data: CASE_FTE_FREED,
+        backgroundColor: CASE_FTE_FREED.map(f => f > 1.0 ? COLORS.green : f > 0.7 ? COLORS.teal : COLORS.blue).map(c => c + '99'),
+        borderRadius: 4,
+        borderSkipped: false,
+      }]
+    },
+    options: {
+      indexAxis: 'y',
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: { x: { beginAtZero: true, title: { display: true, text: 'FTEs Freed' } } }
+    }
+  });
+
+  // Post-automation staffing
+  destroyChart('res-after');
+  charts['res-after'] = new Chart(document.getElementById('res-after-chart'), {
+    type: 'bar',
+    data: {
+      labels: ['Current State', 'After Top 3', 'After Top 6', 'Fully Automated'],
+      datasets: [
+        { label: 'Permanent', data: [15, 15, 12, 8], backgroundColor: COLORS.teal, borderRadius: 4, borderSkipped: false },
+        { label: 'Contractor', data: [4.1, 0.3, 0, 0], backgroundColor: COLORS.amber, borderRadius: 4, borderSkipped: false },
+        { label: 'AI Handled', data: [0, 4.8, 9.5, 13.5], backgroundColor: COLORS.green, borderRadius: 4, borderSkipped: false },
+      ]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { position: 'top' } },
+      scales: {
+        x: { stacked: true },
+        y: { stacked: true, beginAtZero: true, title: { display: true, text: 'FTEs' } }
+      }
+    }
+  });
+
+  // Register labels
+  LABEL_CFG['res-fte-demand-chart'] = [null, { formatter: (v) => v.toFixed(1), fontSize: 9 }];
+  LABEL_CFG['res-hours-chart'] = [{ formatter: (v) => v.toLocaleString() + 'h' }];
+  LABEL_CFG['res-contractor-hc-chart'] = [{}];
+  LABEL_CFG['res-saving-chart'] = [{ formatter: (v) => v.toFixed(2) }];
+}
+
 // ─── INIT CHARTS PER PAGE ───────────────────
 
 function initChartsForPage(page) {
@@ -2305,6 +2975,7 @@ function initChartsForPage(page) {
       case 'behaviour': initBehaviourCharts(); break;
       case 'processing': initProcessingCharts(); break;
       case 'audit': initAuditCharts(); break;
+      case 'resource': initResourceCharts(); break;
     }
   }, 50);
 }
